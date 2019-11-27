@@ -19,7 +19,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Awesome.Player.iOS", "src\A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Awesome.Player.UWP", "src\Awesome.Player.UWP\Awesome.Player.UWP.csproj", "{9F2EAF77-75F3-48A2-B87D-BB943C5DD60B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Awesome.Player.Core", "src\Awesome.Player.Core\Awesome.Player.Core.csproj", "{75854CFF-AA81-42B9-99C1-7F102C61B76E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Awesome.Player.Core", "src\Awesome.Player.Core\Awesome.Player.Core.csproj", "{75854CFF-AA81-42B9-99C1-7F102C61B76E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Artifacts", "Artifacts", "{BEC69F42-50EC-4831-A479-546A68C00C71}"
+	ProjectSection(SolutionItems) = preProject
+		Artifacts\com.aparnik.awesomeplayer.apk = Artifacts\com.aparnik.awesomeplayer.apk
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

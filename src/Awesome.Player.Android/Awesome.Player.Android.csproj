@@ -52,6 +52,11 @@
     <WarningLevel>4</WarningLevel>
     <AndroidManagedSymbols>true</AndroidManagedSymbols>
     <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
+    <AndroidDexTool>d8</AndroidDexTool>
+    <AndroidLinkTool>r8</AndroidLinkTool>
+    <AotAssemblies>true</AotAssemblies>
+    <EnableLLVM>true</EnableLLVM>
+    <AndroidEnableProfiledAot>true</AndroidEnableProfiledAot>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Android" />
@@ -101,7 +106,7 @@
     <PackageReference Include="Prism.DryIoc.Forms" Version="7.2.0.1367" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CustomRenderer\AudioSliderRenderer.cs" />    
+    <Compile Include="CustomRenderer\AudioSliderRenderer.cs" />
     <Compile Include="CustomRenderer\HorizontalScrollViewRenderer.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
