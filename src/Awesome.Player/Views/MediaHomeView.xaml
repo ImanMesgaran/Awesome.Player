@@ -6,6 +6,7 @@
 	xmlns:converters="clr-namespace:Awesome.Player.Core.Converters;assembly=Awesome.Player.Core"
 	xmlns:customRenderer="clr-namespace:Awesome.Player.Core.CustomRenderer;assembly=Awesome.Player.Core"
 	xmlns:forms="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms"
+	xmlns:forms1="clr-namespace:MediaManager.Forms;assembly=MediaManager.Forms"
 	xmlns:prism="http://prismlibrary.com"
 	xmlns:theming="clr-namespace:Awesome.Player.Theming;assembly=Awesome.Player"
 	prism:ViewModelLocator.AutowireViewModel="True">
@@ -39,7 +40,7 @@
 
 				<Label
 					Grid.ColumnSpan="2"
-					Margin="5,5,5,0"
+					Margin="5,10,5,0"
 					FontSize="Large"
 					HorizontalOptions="CenterAndExpand"
 					HorizontalTextAlignment="Center"
@@ -94,7 +95,15 @@
 			<!--  Search and ScrollBar Header  -->
 
 			<!--  Media ListView  -->
-			<CollectionView ItemsSource="{Binding Medias}">
+			<CollectionView
+				x:Name="MediaCollectionView"
+				ItemsLayout="VerticalList"
+				ItemsSource="{Binding Medias}"
+				SelectionChanged="OnCollectionViewSelectionChanged"
+				SelectionChangedCommand="{Binding ItemTappedCommand}"
+				SelectionMode="Single">
+
+
 				<CollectionView.ItemTemplate>
 					<DataTemplate>
 						<Grid Padding="10">
@@ -150,11 +159,34 @@
 						</Grid>
 					</DataTemplate>
 				</CollectionView.ItemTemplate>
-
 			</CollectionView>
 
-			<!--  Buttom Player  -->
+			<!--  Bottom Player  -->
+
 			<Grid
+				Margin="0"
+				Padding="0"
+				BackgroundColor="#222326"
+				ColumnSpacing="0"
+				HeightRequest="150"
+				RowSpacing="0">
+				<!--<BoxView Grid.Row="0" Color="Black" />-->
+				<forms1:VideoView
+					x:Name="videoView"
+					Grid.Row="0"
+					Grid.Column="0" AutoPlay="True"
+					Margin="0"
+					BackgroundColor="#222326"
+					ShowControls="False"
+					Source="{Binding MediaFile.Link}"
+					VerticalOptions="FillAndExpand"
+					VideoHeight="150" />
+				<!--  Position="{Binding MediaFile.Position, Mode=TwoWay}"  -->
+			</Grid>
+
+
+
+			<!--<Grid
 				Margin="0"
 				Padding="0"
 				BackgroundColor="#222326"
@@ -271,7 +303,8 @@
 					Source="icon_play_small"
 					VerticalOptions="Center"
 					WidthRequest="40" />
-			</Grid>
+			</Grid>-->
+
 			<!--  Buttom Player  -->
 		</StackLayout>
 	</ContentPage.Content>

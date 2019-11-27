@@ -37,6 +37,7 @@ namespace Awesome.Player
 			containerRegistry.RegisterForNavigation<MediaNewsView, MediaNewsViewViewModel>();
 			containerRegistry.RegisterForNavigation<MediaSearchView, MediaSearchViewViewModel>();
 			containerRegistry.RegisterForNavigation<MediaLibraryView, MediaLibraryViewViewModel>();
+			containerRegistry.RegisterForNavigation<MediaPlayerPage, MediaPlayerPageViewModel>();
 		}
 	}
 }
