@@ -8,7 +8,7 @@ packages/
 TestResults/
 
 # build output Artifacts
-Artifacts/
+# Artifacts/
 
 # except the folder itself, because it's used in .csproj tags and will break the builds
 !Artifacts/.gitkeep
