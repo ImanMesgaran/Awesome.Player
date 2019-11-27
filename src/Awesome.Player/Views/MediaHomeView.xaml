@@ -1,0 +1,278 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+	x:Class="Awesome.Player.Views.MediaHomeView"
+	xmlns="http://xamarin.com/schemas/2014/forms"
+	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+	xmlns:converters="clr-namespace:Awesome.Player.Core.Converters;assembly=Awesome.Player.Core"
+	xmlns:customRenderer="clr-namespace:Awesome.Player.Core.CustomRenderer;assembly=Awesome.Player.Core"
+	xmlns:forms="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms"
+	xmlns:prism="http://prismlibrary.com"
+	xmlns:theming="clr-namespace:Awesome.Player.Theming;assembly=Awesome.Player"
+	prism:ViewModelLocator.AutowireViewModel="True">
+
+	<ContentPage.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<theming:ColorPalette />
+				<theming:CustomFonts />
+			</ResourceDictionary.MergedDictionaries>
+			<converters:StringToUriImageSourceConverter x:Key="stringToUri" />
+		</ResourceDictionary>
+	</ContentPage.Resources>
+
+	<ContentPage.Content>
+		<StackLayout>
+			<!--  Search and ScrollBar Header  -->
+			<Grid RowSpacing="0">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="40" />
+					<RowDefinition Height="50" />
+					<RowDefinition Height="50" />
+					<RowDefinition Height="1" />
+					<RowDefinition Height="*" />
+				</Grid.RowDefinitions>
+
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="7*" />
+					<ColumnDefinition Width="2*" />
+				</Grid.ColumnDefinitions>
+
+				<Label
+					Grid.ColumnSpan="2"
+					Margin="5,5,5,0"
+					FontSize="Large"
+					HorizontalOptions="CenterAndExpand"
+					HorizontalTextAlignment="Center"
+					Text="Search" />
+
+				<SearchBar
+					x:Name="ListViewSearchBar"
+					Grid.Row="1"
+					Grid.Column="0"
+					BackgroundColor="{StaticResource WhiteColor}"
+					HorizontalOptions="FillAndExpand"
+					HorizontalTextAlignment="Center"
+					Placeholder="Search Library"
+					Text="{Binding SearchBoxText, Mode=TwoWay}"
+					TextColor="{StaticResource BlackColor}"
+					VerticalOptions="CenterAndExpand" />
+
+				<Button
+					Grid.Row="1"
+					Grid.Column="1"
+					BackgroundColor="Transparent"
+					Command="{prism:GoBack}"
+					FontAttributes="None"
+					Text="Cancel"
+					TextColor="DarkGray" />
+
+				<CollectionView
+					Grid.Row="2"
+					Grid.Column="0"
+					Grid.ColumnSpan="2"
+					ItemsLayout="HorizontalList">
+
+					<CollectionView.ItemsSource>
+						<x:Array Type="{x:Type x:String}">
+							<x:String>ALL</x:String>
+							<x:String>TRACKS</x:String>
+							<x:String>PEOPLE</x:String>
+							<x:String>ALBUMS</x:String>
+							<x:String>PLAYLIST</x:String>
+						</x:Array>
+					</CollectionView.ItemsSource>
+
+					<CollectionView.ItemTemplate>
+						<DataTemplate>
+							<StackLayout Padding="15,10,15,10">
+								<Label Margin="10" Text="{Binding}" />
+							</StackLayout>
+						</DataTemplate>
+					</CollectionView.ItemTemplate>
+				</CollectionView>
+			</Grid>
+			<!--  Search and ScrollBar Header  -->
+
+			<!--  Media ListView  -->
+			<CollectionView ItemsSource="{Binding Medias}">
+				<CollectionView.ItemTemplate>
+					<DataTemplate>
+						<Grid Padding="10">
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="1" />
+							</Grid.RowDefinitions>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="70" />
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="60" />
+							</Grid.ColumnDefinitions>
+
+							<forms:CachedImage
+								Grid.Row="0"
+								Grid.RowSpan="3"
+								Aspect="AspectFit"
+								CacheDuration="15"
+								HeightRequest="60"
+								Source="{Binding Image, Converter={StaticResource stringToUri}}"
+								WidthRequest="60" />
+
+							<Label
+								Grid.Row="0"
+								Grid.Column="1"
+								FontAttributes="Bold"
+								LineBreakMode="TailTruncation"
+								Text="{Binding Caption}" />
+
+							<Label
+								Grid.Row="1"
+								Grid.Column="1"
+								FontAttributes="Bold"
+								LineBreakMode="TailTruncation"
+								Text="{Binding Title}" />
+
+							<Label
+								Grid.Row="2"
+								Grid.Column="1"
+								FontAttributes="Italic"
+								LineBreakMode="TailTruncation"
+								Text="{Binding Views}"
+								VerticalOptions="End" />
+
+							<Grid
+								Grid.Row="3"
+								Grid.Column="0"
+								Grid.ColumnSpan="3">
+								<BoxView Color="DimGray" />
+							</Grid>
+						</Grid>
+					</DataTemplate>
+				</CollectionView.ItemTemplate>
+
+			</CollectionView>
+
+			<!--  Buttom Player  -->
+			<Grid
+				Margin="0"
+				Padding="0"
+				BackgroundColor="#222326"
+				ColumnSpacing="0"
+				RowSpacing="0">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="4" />
+					<RowDefinition Height="Auto" />
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="Auto" />
+				</Grid.ColumnDefinitions>
+				<customRenderer:AudioSlider
+					Grid.Row="0"
+					Grid.Column="0"
+					Grid.ColumnSpan="3"
+					Margin="0"
+					HasThumb="false"
+					HeightRequest="4"
+					HorizontalOptions="Fill"
+					Maximum="243"
+					Minimum="0"
+					Value="5" />
+				<Image
+					Grid.Row="1"
+					Grid.Column="0"
+					Margin="5,0,0,5"
+					HeightRequest="40"
+					Source="icon_chevron_up"
+					VerticalOptions="Center"
+					WidthRequest="40" />
+				<StackLayout
+					Grid.Row="1"
+					Grid.Column="1"
+					VerticalOptions="Center">
+					<StackLayout.HeightRequest>
+						<OnPlatform x:TypeArguments="x:Double">
+							<On Platform="Android" Value="50" />
+							<On Platform="iOS" Value="40" />
+						</OnPlatform>
+					</StackLayout.HeightRequest>
+					<StackLayout.Margin>
+						<OnPlatform x:TypeArguments="Thickness">
+							<On Platform="Android" Value="0,10,0,0" />
+						</OnPlatform>
+					</StackLayout.Margin>
+					<StackLayout
+						HorizontalOptions="Center"
+						Orientation="Horizontal"
+						Spacing="2">
+						<Label
+							HorizontalTextAlignment="Center"
+							Text="Mercy"
+							TextColor="#ffffff">
+							<Label.FontSize>
+								<OnPlatform x:TypeArguments="x:Double">
+									<On Platform="Android" Value="14" />
+									<On Platform="iOS" Value="11" />
+								</OnPlatform>
+							</Label.FontSize>
+						</Label>
+						<Label
+							FontSize="10"
+							HorizontalTextAlignment="Center"
+							Text="•"
+							TextColor="#ffffff">
+							<Label.FontSize>
+								<OnPlatform x:TypeArguments="x:Double">
+									<On Platform="Android" Value="13" />
+									<On Platform="iOS" Value="10" />
+								</OnPlatform>
+							</Label.FontSize>
+						</Label>
+						<Label
+							FontSize="11"
+							HorizontalTextAlignment="Center"
+							Text="Muse"
+							TextColor="#adaeb2">
+							<Label.FontSize>
+								<OnPlatform x:TypeArguments="x:Double">
+									<On Platform="Android" Value="14" />
+									<On Platform="iOS" Value="11" />
+								</OnPlatform>
+							</Label.FontSize>
+						</Label>
+					</StackLayout>
+					<StackLayout HorizontalOptions="Center" Orientation="Horizontal">
+						<Image
+							Margin="0,-7,0,0"
+							Source="icon_devices"
+							WidthRequest="20" />
+						<Label
+							Margin="-5,-7,0,0"
+							FontSize="11"
+							HorizontalTextAlignment="Center"
+							Text="Devices Available"
+							TextColor="White">
+							<Label.FontSize>
+								<OnPlatform x:TypeArguments="x:Double">
+									<On Platform="Android" Value="13" />
+									<On Platform="iOS" Value="11" />
+								</OnPlatform>
+							</Label.FontSize>
+						</Label>
+					</StackLayout>
+				</StackLayout>
+				<Image
+					Grid.Row="1"
+					Grid.Column="2"
+					Margin="0,0,5,5"
+					HeightRequest="40"
+					Source="icon_play_small"
+					VerticalOptions="Center"
+					WidthRequest="40" />
+			</Grid>
+			<!--  Buttom Player  -->
+		</StackLayout>
+	</ContentPage.Content>
+</ContentPage>

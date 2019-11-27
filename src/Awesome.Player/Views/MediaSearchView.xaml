@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+	x:Class="Awesome.Player.Views.MediaSearchView"
+	xmlns="http://xamarin.com/schemas/2014/forms"
+	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+	xmlns:prism="http://prismlibrary.com"
+	prism:ViewModelLocator.AutowireViewModel="True">
+	<ContentPage.Content>
+		<Grid>
+			<Label
+				FontSize="16"
+				HorizontalOptions="Fill"
+				HorizontalTextAlignment="Center"
+				Style="{StaticResource MediumLabel}"
+				Text="Nothing to see here..."
+				TextColor="#FFF"
+				VerticalOptions="Fill"
+				VerticalTextAlignment="Center" />
+		</Grid>
+	</ContentPage.Content>
+</ContentPage>

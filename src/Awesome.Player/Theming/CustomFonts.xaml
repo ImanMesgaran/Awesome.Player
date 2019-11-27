@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ResourceDictionary
+	x:Class="Awesome.Player.Theming.CustomFonts"
+	xmlns="http://xamarin.com/schemas/2014/forms"
+	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+	<!--  Custom Fonts - this are temporary  -->
+	<!--  UWP ex. "Assets/Fonts/Lobster-Regular.ttf#Lobster"  -->
+	<!--  Font Awesome Fonts  -->
+	<OnPlatform x:Key="FontAwesomeBrands-Regular" x:TypeArguments="x:String">
+		<On Platform="Android" Value="FontAwesome5Brands-Regular-400.otf#Font Awesome 5 Brands Regular" />
+		<On Platform="UWP" Value="Assets/Fonts/FontAwesome5Brands-Regular-400.otf#Font Awesome 5 Brands Regular" />
+		<On Platform="iOS" Value="FontAwesome5BrandsRegular" />
+	</OnPlatform>
+
+	<OnPlatform x:Key="FontAwesomeProLight" x:TypeArguments="x:String">
+		<On Platform="Android" Value="FontAwesome5Pro-Light-300.otf#Font Awesome 5 Pro Light" />
+		<On Platform="UWP" Value="Assets/Fonts/FontAwesome5Pro-Light-300.otf#Font Awesome 5 Pro Light" />
+		<On Platform="iOS" Value="FontAwesome5ProLight" />
+	</OnPlatform>
+
+	<OnPlatform x:Key="FontAwesomeProRegular" x:TypeArguments="x:String">
+		<On Platform="Android" Value="FontAwesome5Pro-Regular-400.otf#Font Awesome 5 Pro Regular" />
+		<On Platform="UWP" Value="Assets/Fonts/FontAwesome5Pro-Regular-400.otf#Font Awesome 5 Pro Regular" />
+		<On Platform="iOS" Value="FontAwesome5ProRegular" />
+	</OnPlatform>
+
+	<OnPlatform x:Key="FontAwesomeProSolid" x:TypeArguments="x:String">
+		<On Platform="Android" Value="FontAwesome5Pro-Solid-900.otf#Font Awesome 5 Pro Solid" />
+		<On Platform="UWP" Value="Assets/Fonts/FontAwesome5Pro-Solid-900.otf#Font Awesome 5 Pro Solid" />
+		<On Platform="iOS" Value="FontAwesome5ProSolid" />
+	</OnPlatform>
+	<!--  Font Awesome Fonts  -->
+	<!--  Custom Fonts - this are temporary  -->
+</ResourceDictionary>

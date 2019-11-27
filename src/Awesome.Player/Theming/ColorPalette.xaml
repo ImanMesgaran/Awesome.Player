@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<ResourceDictionary
+	x:Class="Awesome.Player.Theming.ColorPalette"
+	xmlns="http://xamarin.com/schemas/2014/forms"
+	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+	<!--  See https://material.io/color for more help choosing a Material Design Color scheme  -->
+	<Color x:Key="PrimaryColor">#008000</Color>
+	<Color x:Key="Primary">#78909c</Color>
+	<Color x:Key="PrimaryDark">#4b636e</Color>
+	<Color x:Key="PrimaryDarkTranslucent">#9926213C</Color>
+	<Color x:Key="PrimaryLight">#138fb1</Color>
+	<Color x:Key="PrimaryLighter">#d9edf4</Color>
+	<Color x:Key="PrimaryOddLight">#8cc6d2</Color>
+	<Color x:Key="BackgroundLight">#d9eef4</Color>
+	<Color x:Key="BackgroundLighter">#eff8fa</Color>
+	<Color x:Key="TextDark">#006784</Color>
+	<Color x:Key="Accent">#a7c0cd</Color>
+	<Color x:Key="LabelSectionText">#6D6D72</Color>
+	<Color x:Key="DetailTextColor">#979797</Color>
+	<Color x:Key="MasterPageColorOld">#2A2E43</Color>
+	<Color x:Key="SecondaryBackgroundColor">#f2f2f2</Color>
+	<Color x:Key="SecondaryTextIconsColor">#797979</Color>
+	<Color x:Key="WhiteColor">#ffffff</Color>
+	<Color x:Key="BlackColor">#000000</Color>
+	<Color x:Key="OrangeColor">#FF7D00</Color>
+	<Color x:Key="TextBoxColor">#696969</Color>
+
+</ResourceDictionary>

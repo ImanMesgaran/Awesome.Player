@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<TabbedPage
+	x:Class="Awesome.Player.Views.MyTabbedPage"
+	xmlns="http://xamarin.com/schemas/2014/forms"
+	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+	xmlns:android="clr-namespace:Xamarin.Forms.PlatformConfiguration.AndroidSpecific;assembly=Xamarin.Forms.Core"
+	xmlns:prism="http://prismlibrary.com"
+	xmlns:resources="clr-namespace:Awesome.Player.Resources;assembly=Awesome.Player"
+	xmlns:theming="clr-namespace:Awesome.Player.Theming;assembly=Awesome.Player"
+	xmlns:views="clr-namespace:Awesome.Player.Views;assembly=Awesome.Player"
+	android:TabbedPage.BarItemColor="DarkGray"
+	android:TabbedPage.BarSelectedItemColor="GhostWhite"
+	android:TabbedPage.ToolbarPlacement="Bottom"
+	prism:ViewModelLocator.AutowireViewModel="True"
+	BarBackgroundColor="Black">
+
+	<TabbedPage.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<theming:CustomFonts />
+				<theming:ColorPalette />
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</TabbedPage.Resources>
+
+	<TabbedPage.Children>
+		<views:MediaHomeView>
+			<views:MediaHomeView.IconImageSource>
+				<FontImageSource
+					FontFamily="{StaticResource FontAwesomeProRegular}"
+					Glyph="{x:Static resources:AppIcons.HomeFont}"
+					Size="20"
+					Color="DarkGray" />
+			</views:MediaHomeView.IconImageSource>
+		</views:MediaHomeView>
+
+		<views:MediaNewsView>
+			<views:MediaNewsView.IconImageSource>
+				<FontImageSource
+					FontFamily="{StaticResource FontAwesomeProRegular}"
+					Glyph="{x:Static resources:AppIcons.NewsModuleFont}"
+					Size="20" />
+			</views:MediaNewsView.IconImageSource>
+		</views:MediaNewsView>
+
+		<views:MediaSearchView>
+			<views:MediaSearchView.IconImageSource>
+				<FontImageSource
+					FontFamily="{StaticResource FontAwesomeProRegular}"
+					Glyph="{x:Static resources:AppIcons.SearchFont}"
+					Size="20" />
+			</views:MediaSearchView.IconImageSource>
+		</views:MediaSearchView>
+
+		<views:MediaLibraryView>
+			<views:MediaLibraryView.IconImageSource>
+				<FontImageSource
+					FontFamily="{StaticResource FontAwesomeProRegular}"
+					Glyph="{x:Static resources:AppIcons.DocumentLibraryFont}"
+					Size="20" />
+			</views:MediaLibraryView.IconImageSource>
+		</views:MediaLibraryView>
+	</TabbedPage.Children>
+
+</TabbedPage>
