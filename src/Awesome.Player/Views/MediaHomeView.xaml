@@ -3,13 +3,16 @@
 	x:Class="Awesome.Player.Views.MediaHomeView"
 	xmlns="http://xamarin.com/schemas/2014/forms"
 	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-	xmlns:converters="clr-namespace:Awesome.Player.Core.Converters;assembly=Awesome.Player.Core"
+	xmlns:converters="clr-namespace:Awesome.Player.Converters;assembly=Awesome.Player"
 	xmlns:customRenderer="clr-namespace:Awesome.Player.Core.CustomRenderer;assembly=Awesome.Player.Core"
 	xmlns:forms="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms"
 	xmlns:forms1="clr-namespace:MediaManager.Forms;assembly=MediaManager.Forms"
+	xmlns:models="clr-namespace:Awesome.Player.Models"
 	xmlns:prism="http://prismlibrary.com"
 	xmlns:theming="clr-namespace:Awesome.Player.Theming;assembly=Awesome.Player"
-	prism:ViewModelLocator.AutowireViewModel="True">
+	xmlns:viewmodels="clr-namespace:Awesome.Player.ViewModels"
+	prism:ViewModelLocator.AutowireViewModel="True"
+	x:DataType="viewmodels:MediaHomeViewViewModel">
 
 	<ContentPage.Resources>
 		<ResourceDictionary>
@@ -54,9 +57,9 @@
 					HorizontalOptions="FillAndExpand"
 					HorizontalTextAlignment="Center"
 					Placeholder="Search Library"
-					Text="{Binding SearchBoxText, Mode=TwoWay}"
 					TextColor="{StaticResource BlackColor}"
 					VerticalOptions="CenterAndExpand" />
+				<!--  Text="{Binding SearchBoxText, Mode=TwoWay}"  -->
 
 				<Button
 					Grid.Row="1"
@@ -103,9 +106,8 @@
 				SelectionChangedCommand="{Binding ItemTappedCommand}"
 				SelectionMode="Single">
 
-
 				<CollectionView.ItemTemplate>
-					<DataTemplate>
+					<DataTemplate x:DataType="models:MediaModel">
 						<Grid Padding="10">
 							<Grid.RowDefinitions>
 								<RowDefinition Height="Auto" />
@@ -170,18 +172,33 @@
 				ColumnSpacing="0"
 				HeightRequest="150"
 				RowSpacing="0">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+				</Grid.RowDefinitions>
 				<!--<BoxView Grid.Row="0" Color="Black" />-->
 				<forms1:VideoView
 					x:Name="videoView"
 					Grid.Row="0"
-					Grid.Column="0" AutoPlay="True"
+					Grid.Column="0"
 					Margin="0"
+					AutoPlay="True"
 					BackgroundColor="#222326"
 					ShowControls="False"
 					Source="{Binding MediaFile.Link}"
 					VerticalOptions="FillAndExpand"
 					VideoHeight="150" />
 				<!--  Position="{Binding MediaFile.Position, Mode=TwoWay}"  -->
+				<!--<Slider
+					x:Name="PositionSlider"
+					Margin="25,20,25,25"
+					DragCompletedCommand="{Binding SliderDragCompletedCommand}"
+					Maximum="{Binding MusicDuration.TotalMilliseconds}"
+					Minimum="0"
+					ThumbColor="Coral"
+					ValueChanged="PositionSlider_OnValueChanged"
+					VerticalOptions="End"
+					Value="{Binding NowDurationNum}" />-->
 			</Grid>
 
 

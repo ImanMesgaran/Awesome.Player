@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 using Xamarin.Forms;
 
-namespace Awesome.Player.Core.Converters
+namespace Awesome.Player.Converters
 {
 	public class SecondsToTimeConverter : IValueConverter
 	{

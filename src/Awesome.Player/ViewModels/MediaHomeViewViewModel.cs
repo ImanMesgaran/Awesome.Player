@@ -7,6 +7,7 @@ using System.Linq;
 using Awesome.Player.Core.ExtentionMethods;
 using Awesome.Player.Core.Infrastructure;
 using Awesome.Player.Models;
+using MediaManager;
 using Prism.Navigation;
 using Prism.Services;
 
@@ -31,6 +32,15 @@ namespace Awesome.Player.ViewModels
 		{
 			if (media == null) return;
 
+			//var currentMedia = CrossMediaManager.Current.IsPlaying();
+
+			//if (CrossMediaManager.Current.IsPlaying() && CrossMediaManager.Current.Queue.Current.Title != media.Title)
+			//{
+			//	await CrossMediaManager.Current.Stop();
+			//}
+
+			await CrossMediaManager.Current.Stop();
+			
 			try
 			{
 				var navigationParameters = new NavigationParameters();
@@ -39,6 +49,15 @@ namespace Awesome.Player.ViewModels
 			}
 			catch (Exception ex) {}
 		}
+
+		//private DelegateCommand _sliderDragCompletedCommand;
+		//public DelegateCommand SliderDragCompletedCommand =>
+		//	_sliderDragCompletedCommand ?? (_sliderDragCompletedCommand = new DelegateCommand(ExecuteSliderDragCompletedCommand));
+			
+		//async void ExecuteSliderDragCompletedCommand()
+		//{
+		//	await CrossMediaManager.Current.SeekTo(TimeSpan.FromMilliseconds(NowDurationNum));
+		//}
 
 		private MediaModel _mediaFile;
 		public MediaModel MediaFile
@@ -54,11 +73,20 @@ namespace Awesome.Player.ViewModels
 			set { SetProperty(ref _medias, value); }
 		}
 
+		//private TimeSpan _musicDuration;
+		//public TimeSpan MusicDuration
+		//{
+		//	get { return _musicDuration; }
+		//	set { SetProperty(ref _musicDuration, value); }
+		//}
+
 		public MediaHomeViewViewModel(
 			INavigationService navigationService,
 			IPageDialogService pageDialogService,
 			IDeviceService deviceService) : base(navigationService, pageDialogService, deviceService)
 		{
+			#region hard-coded files
+			
 			Medias = new ObservableCollection<MediaModel>()
 			{
 				new MediaModel()
@@ -68,7 +96,30 @@ namespace Awesome.Player.ViewModels
 					Caption = "Best of Classical Masterpieces",
 					Duration = "7:32",
 					Views = "3.2M",
-					Link = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
+					Link = "https://dl.just-music.ir/music/BestOf/Vivaldi/The Very Best Of/CD1/01 - Violin Concerto, for violin, strings & continuo in E major ('La Primavera,' The.mp3",
+					Notes = new List<Note>()
+					{
+						new Note()
+						{
+							Text = "sample 1",
+							Position = 1682
+						},
+						new Note()
+						{
+							Text = "sample 2",
+							Position = 51529
+						},
+						new Note()
+						{
+							Text = "sample 3",
+							Position = 123247
+						},
+						new Note()
+						{
+							Text = "sample 4",
+							Position = 214488
+						}
+					}
 				},
 				new MediaModel()
 				{
@@ -77,7 +128,7 @@ namespace Awesome.Player.ViewModels
 					Caption = "Beethoven Works - Ludwig Van Beethoven Songs",
 					Duration = "11:00",
 					Views = "1.8M",
-					Link = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
+					Link = "https://dl.just-music.ir/music/BestOf/Vivaldi/The Very Best Of/CD1/01 - Violin Concerto, for violin, strings & continuo in E major ('La Primavera,' The.mp3"
 				},
 				new MediaModel()
 				{
@@ -125,6 +176,9 @@ namespace Awesome.Player.ViewModels
 				}
 			};
 
+			#endregion hard-coded files
+
+			//MusicDuration = TimeSpan.FromMilliseconds(1000);
 		}
 
 		public async void NavigateFromViewCommand(MediaModel media)

@@ -28,7 +28,7 @@ namespace Awesome.Player.Droid.CustomRenderer
 			{
 				Control.SetPadding(0, 0, 0, 0);
 				Control.SetPaddingRelative(0, 0, 0, 0);
-
+				//var sdf =Control.Thumb.Bounds.Left;
 				// Set custom drawable resource
 				Control.SetProgressDrawableTiled(Resources.GetDrawable(Resource.Drawable.custom_slider, (this.Context).Theme));
 

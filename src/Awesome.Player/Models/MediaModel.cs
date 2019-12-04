@@ -12,6 +12,8 @@ namespace Awesome.Player.Models
 		public string Views { get; set; }
 		public string Image { get; set; }
 		public string Link { get; set; }
+		public List<Note> Notes { get; set; }
 		//public TimeSpan Position { get; set; }
+		public string Extension { get; set; }
 	}
 }
