@@ -9,6 +9,7 @@
 	xmlns:forms1="clr-namespace:MediaManager.Forms;assembly=MediaManager.Forms"
 	xmlns:models="clr-namespace:Awesome.Player.Models"
 	xmlns:prism="http://prismlibrary.com"
+	xmlns:resources="clr-namespace:Awesome.Player.Resources;assembly=Awesome.Player"
 	xmlns:theming="clr-namespace:Awesome.Player.Theming;assembly=Awesome.Player"
 	xmlns:viewmodels="clr-namespace:Awesome.Player.ViewModels"
 	prism:ViewModelLocator.AutowireViewModel="True"
@@ -25,81 +26,84 @@
 	</ContentPage.Resources>
 
 	<ContentPage.Content>
-		<StackLayout>
-			<!--  Search and ScrollBar Header  -->
-			<Grid RowSpacing="0">
-				<Grid.RowDefinitions>
-					<RowDefinition Height="40" />
-					<RowDefinition Height="50" />
-					<RowDefinition Height="50" />
-					<RowDefinition Height="1" />
-					<RowDefinition Height="*" />
-				</Grid.RowDefinitions>
 
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="7*" />
-					<ColumnDefinition Width="2*" />
-				</Grid.ColumnDefinitions>
+		<!--  Search and ScrollBar Header  -->
+		<Grid RowSpacing="0">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="40" />
+				<RowDefinition Height="50" />
+				<RowDefinition Height="50" />
+				<RowDefinition Height="1" />
+				<RowDefinition Height="*" />
+				<RowDefinition Height="Auto" />
+			</Grid.RowDefinitions>
 
-				<Label
-					Grid.ColumnSpan="2"
-					Margin="5,10,5,0"
-					FontSize="Large"
-					HorizontalOptions="CenterAndExpand"
-					HorizontalTextAlignment="Center"
-					Text="Search" />
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="7*" />
+				<ColumnDefinition Width="2*" />
+			</Grid.ColumnDefinitions>
 
-				<SearchBar
-					x:Name="ListViewSearchBar"
-					Grid.Row="1"
-					Grid.Column="0"
-					BackgroundColor="{StaticResource WhiteColor}"
-					HorizontalOptions="FillAndExpand"
-					HorizontalTextAlignment="Center"
-					Placeholder="Search Library"
-					TextColor="{StaticResource BlackColor}"
-					VerticalOptions="CenterAndExpand" />
-				<!--  Text="{Binding SearchBoxText, Mode=TwoWay}"  -->
+			<Label
+				Grid.ColumnSpan="2"
+				Margin="5,10,5,0"
+				FontSize="Large"
+				HorizontalOptions="CenterAndExpand"
+				HorizontalTextAlignment="Center"
+				Text="Search" />
 
-				<Button
-					Grid.Row="1"
-					Grid.Column="1"
-					BackgroundColor="Transparent"
-					Command="{prism:GoBack}"
-					FontAttributes="None"
-					Text="Cancel"
-					TextColor="DarkGray" />
+			<SearchBar
+				x:Name="ListViewSearchBar"
+				Grid.Row="1"
+				Grid.Column="0"
+				BackgroundColor="{StaticResource WhiteColor}"
+				HorizontalOptions="FillAndExpand"
+				HorizontalTextAlignment="Center"
+				Placeholder="Search Library"
+				TextColor="{StaticResource BlackColor}"
+				VerticalOptions="CenterAndExpand" />
+			<!--  Text="{Binding SearchBoxText, Mode=TwoWay}"  -->
 
-				<CollectionView
-					Grid.Row="2"
-					Grid.Column="0"
-					Grid.ColumnSpan="2"
-					ItemsLayout="HorizontalList">
+			<Button
+				Grid.Row="1"
+				Grid.Column="1"
+				BackgroundColor="Transparent"
+				Command="{prism:GoBack}"
+				FontAttributes="None"
+				Text="Cancel"
+				TextColor="DarkGray" />
 
-					<CollectionView.ItemsSource>
-						<x:Array Type="{x:Type x:String}">
-							<x:String>ALL</x:String>
-							<x:String>TRACKS</x:String>
-							<x:String>PEOPLE</x:String>
-							<x:String>ALBUMS</x:String>
-							<x:String>PLAYLIST</x:String>
-						</x:Array>
-					</CollectionView.ItemsSource>
+			<CollectionView
+				Grid.Row="2"
+				Grid.Column="0"
+				Grid.ColumnSpan="2"
+				ItemsLayout="HorizontalList">
 
-					<CollectionView.ItemTemplate>
-						<DataTemplate>
-							<StackLayout Padding="15,10,15,10">
-								<Label Margin="10" Text="{Binding}" />
-							</StackLayout>
-						</DataTemplate>
-					</CollectionView.ItemTemplate>
-				</CollectionView>
-			</Grid>
+				<CollectionView.ItemsSource>
+					<x:Array Type="{x:Type x:String}">
+						<x:String>ALL</x:String>
+						<x:String>TRACKS</x:String>
+						<x:String>PEOPLE</x:String>
+						<x:String>ALBUMS</x:String>
+						<x:String>PLAYLIST</x:String>
+					</x:Array>
+				</CollectionView.ItemsSource>
+
+				<CollectionView.ItemTemplate>
+					<DataTemplate>
+						<StackLayout Padding="15,10,15,10">
+							<Label Margin="10" Text="{Binding}" />
+						</StackLayout>
+					</DataTemplate>
+				</CollectionView.ItemTemplate>
+			</CollectionView>
 			<!--  Search and ScrollBar Header  -->
 
 			<!--  Media ListView  -->
 			<CollectionView
 				x:Name="MediaCollectionView"
+				Grid.Row="4"
+				Grid.Column="0"
+				Grid.ColumnSpan="2"
 				ItemsLayout="VerticalList"
 				ItemsSource="{Binding Medias}"
 				SelectionChanged="OnCollectionViewSelectionChanged"
@@ -164,165 +168,95 @@
 			</CollectionView>
 
 			<!--  Bottom Player  -->
-
 			<Grid
-				Margin="0"
-				Padding="0"
+				Grid.Row="5"
+				Grid.Column="0"
+				Grid.ColumnSpan="2"
 				BackgroundColor="#222326"
-				ColumnSpacing="0"
-				HeightRequest="150"
-				RowSpacing="0">
+				ColumnSpacing="20"
+				IsVisible="{Binding IsVisible}"
+				VerticalOptions="EndAndExpand">
 				<Grid.RowDefinitions>
-					<RowDefinition Height="Auto" />
-					<RowDefinition Height="Auto" />
+					<RowDefinition Height="70" />
+					<RowDefinition Height="50" />
+					<RowDefinition Height="2" />
 				</Grid.RowDefinitions>
-				<!--<BoxView Grid.Row="0" Color="Black" />-->
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="10" />
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="7*" />
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="10" />
+				</Grid.ColumnDefinitions>
+
 				<forms1:VideoView
 					x:Name="videoView"
 					Grid.Row="0"
 					Grid.Column="0"
 					Margin="0"
-					AutoPlay="True"
 					BackgroundColor="#222326"
 					ShowControls="False"
-					Source="{Binding MediaFile.Link}"
-					VerticalOptions="FillAndExpand"
-					VideoHeight="150" />
+					VerticalOptions="FillAndExpand" />
+				<!--
+					AutoPlay="True"
+					VideoHeight="150"
+				-->
 				<!--  Position="{Binding MediaFile.Position, Mode=TwoWay}"  -->
-				<!--<Slider
-					x:Name="PositionSlider"
-					Margin="25,20,25,25"
-					DragCompletedCommand="{Binding SliderDragCompletedCommand}"
-					Maximum="{Binding MusicDuration.TotalMilliseconds}"
-					Minimum="0"
-					ThumbColor="Coral"
-					ValueChanged="PositionSlider_OnValueChanged"
-					VerticalOptions="End"
-					Value="{Binding NowDurationNum}" />-->
-			</Grid>
 
-
-
-			<!--<Grid
-				Margin="0"
-				Padding="0"
-				BackgroundColor="#222326"
-				ColumnSpacing="0"
-				RowSpacing="0">
-				<Grid.RowDefinitions>
-					<RowDefinition Height="4" />
-					<RowDefinition Height="Auto" />
-				</Grid.RowDefinitions>
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="Auto" />
-					<ColumnDefinition Width="*" />
-					<ColumnDefinition Width="Auto" />
-				</Grid.ColumnDefinitions>
-				<customRenderer:AudioSlider
-					Grid.Row="0"
-					Grid.Column="0"
-					Grid.ColumnSpan="3"
-					Margin="0"
-					HasThumb="false"
-					HeightRequest="4"
-					HorizontalOptions="Fill"
-					Maximum="243"
-					Minimum="0"
-					Value="5" />
-				<Image
-					Grid.Row="1"
-					Grid.Column="0"
-					Margin="5,0,0,5"
-					HeightRequest="40"
-					Source="icon_chevron_up"
-					VerticalOptions="Center"
-					WidthRequest="40" />
-				<StackLayout
+				<ImageButton
 					Grid.Row="1"
 					Grid.Column="1"
-					VerticalOptions="Center">
-					<StackLayout.HeightRequest>
-						<OnPlatform x:TypeArguments="x:Double">
-							<On Platform="Android" Value="50" />
-							<On Platform="iOS" Value="40" />
-						</OnPlatform>
-					</StackLayout.HeightRequest>
-					<StackLayout.Margin>
-						<OnPlatform x:TypeArguments="Thickness">
-							<On Platform="Android" Value="0,10,0,0" />
-						</OnPlatform>
-					</StackLayout.Margin>
-					<StackLayout
-						HorizontalOptions="Center"
-						Orientation="Horizontal"
-						Spacing="2">
-						<Label
-							HorizontalTextAlignment="Center"
-							Text="Mercy"
-							TextColor="#ffffff">
-							<Label.FontSize>
-								<OnPlatform x:TypeArguments="x:Double">
-									<On Platform="Android" Value="14" />
-									<On Platform="iOS" Value="11" />
-								</OnPlatform>
-							</Label.FontSize>
-						</Label>
-						<Label
-							FontSize="10"
-							HorizontalTextAlignment="Center"
-							Text="•"
-							TextColor="#ffffff">
-							<Label.FontSize>
-								<OnPlatform x:TypeArguments="x:Double">
-									<On Platform="Android" Value="13" />
-									<On Platform="iOS" Value="10" />
-								</OnPlatform>
-							</Label.FontSize>
-						</Label>
-						<Label
-							FontSize="11"
-							HorizontalTextAlignment="Center"
-							Text="Muse"
-							TextColor="#adaeb2">
-							<Label.FontSize>
-								<OnPlatform x:TypeArguments="x:Double">
-									<On Platform="Android" Value="14" />
-									<On Platform="iOS" Value="11" />
-								</OnPlatform>
-							</Label.FontSize>
-						</Label>
-					</StackLayout>
-					<StackLayout HorizontalOptions="Center" Orientation="Horizontal">
-						<Image
-							Margin="0,-7,0,0"
-							Source="icon_devices"
-							WidthRequest="20" />
-						<Label
-							Margin="-5,-7,0,0"
-							FontSize="11"
-							HorizontalTextAlignment="Center"
-							Text="Devices Available"
-							TextColor="White">
-							<Label.FontSize>
-								<OnPlatform x:TypeArguments="x:Double">
-									<On Platform="Android" Value="13" />
-									<On Platform="iOS" Value="11" />
-								</OnPlatform>
-							</Label.FontSize>
-						</Label>
-					</StackLayout>
-				</StackLayout>
-				<Image
+					Margin="5"
+					BackgroundColor="Transparent"
+					Command="{Binding PlayPauseCommand}">
+					<ImageButton.Source>
+						<FontImageSource FontFamily="{StaticResource FontAwesomeProSolid}" Glyph="{Binding PlayPauseImage}" />
+					</ImageButton.Source>
+				</ImageButton>
+
+				<StackLayout
 					Grid.Row="1"
 					Grid.Column="2"
-					Margin="0,0,5,5"
-					HeightRequest="40"
-					Source="icon_play_small"
-					VerticalOptions="Center"
-					WidthRequest="40" />
-			</Grid>-->
+					HorizontalOptions="CenterAndExpand"
+					VerticalOptions="CenterAndExpand">
+					<Label
+						HorizontalOptions="Center"
+						LineBreakMode="TailTruncation"
+						Text="Binding Media.Caption} ************************"
+						TextColor="AntiqueWhite"
+						VerticalTextAlignment="Center" />
 
-			<!--  Buttom Player  -->
-		</StackLayout>
+					<Label
+						FontSize="Caption"
+						HorizontalOptions="Center"
+						LineBreakMode="WordWrap"
+						Text="Binding Media.Title}"
+						TextColor="AntiqueWhite"
+						VerticalTextAlignment="Center" />
+				</StackLayout>
+
+				<ImageButton
+					Grid.Row="1"
+					Grid.Column="3"
+					Margin="5"
+					BackgroundColor="Transparent"
+					Command="{Binding LikeCommand}">
+					<ImageButton.Source>
+						<FontImageSource FontFamily="{Binding LikeFontFamily}" Glyph="{x:Static resources:AppIcons.Like}" />
+					</ImageButton.Source>
+				</ImageButton>
+
+				<ProgressBar
+					Grid.Row="2"
+					Grid.Column="0"
+					Grid.ColumnSpan="5"
+					Progress="{Binding Progress}"
+					VerticalOptions="End" />
+
+			</Grid>
+		</Grid>
+		<!--  Bottom Player  -->
+
+
 	</ContentPage.Content>
 </ContentPage>

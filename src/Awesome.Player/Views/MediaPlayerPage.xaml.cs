@@ -23,8 +23,8 @@ namespace Awesome.Player.Views
 
 			_eventAggregator.GetEvent<NotesChangedEvent>().Subscribe(NotesListChanged);
 			
-			TimeLabel.Text = "";
-			PositionSlider.Value = 0;
+			//TimeLabel.Text = "";
+			//PositionSlider.Value = 0;
 
 			//var viewmodel = this.BindingContext as MediaPlayerPageViewModel;
 			//var notes = viewmodel?.Media.Notes;

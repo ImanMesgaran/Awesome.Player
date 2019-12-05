@@ -49,5 +49,8 @@ namespace Awesome.Player.Resources
 		public static readonly string SortDownFont = "\uf0dd";
 		public static readonly string SortFont = "\uf0dc";
 		public static readonly string InfoCircleFont = "\uf05a";
+		public static readonly string PauseFont = "\uf04c";
+		public static readonly string PlayFont = "\uf04b";
+		public static readonly string Like = "\uf004";
 	}
 }

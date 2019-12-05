@@ -112,10 +112,10 @@
 				Grid.Row="2"
 				Grid.Column="0"
 				Grid.ColumnSpan="2"
-				AutoPlay="True"
 				BackgroundColor="DarkTurquoise"
 				ShowControls="False"
-				Source="{Binding Media.Link}" />
+				 />
+			<!--Source="{Binding Media.Link}"-->
 			<!--  IsVisible="{Binding Media, Converter={StaticResource formatToVisibility}}"  -->
 
 			<!--

@@ -2,6 +2,7 @@
 using System.Linq;
 using Awesome.Player.Models;
 using Awesome.Player.ViewModels;
+using MediaManager;
 using Prism.Navigation;
 using Xamarin.Forms;
 
@@ -9,9 +10,17 @@ namespace Awesome.Player.Views
 {
 	public partial class MediaHomeView : ContentPage,IDestructible
 	{
+		public IMediaManager MediaManager { get; }
+
 		public MediaHomeView()
 		{
 			InitializeComponent();
+
+			MediaManager = ((MediaHomeViewViewModel) this.BindingContext).MediaManager;
+
+			//videoView.Source = CrossMediaManager.Current.Queue.Current;
+			//videoView.Position=CrossMediaManager.Current.Queue.Current.
+			//CrossMediaManager.Current.
 		}
 
 		public void Destroy()

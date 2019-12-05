@@ -2,6 +2,7 @@
 using Prism.Ioc;
 using Awesome.Player.ViewModels;
 using Awesome.Player.Views;
+using MediaManager;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -38,6 +39,9 @@ namespace Awesome.Player
 			containerRegistry.RegisterForNavigation<MediaSearchView, MediaSearchViewViewModel>();
 			containerRegistry.RegisterForNavigation<MediaLibraryView, MediaLibraryViewViewModel>();
 			containerRegistry.RegisterForNavigation<MediaPlayerPage, MediaPlayerPageViewModel>();
+
+			//var mediaManager = CrossMediaManager.Current;
+			containerRegistry.RegisterInstance<IMediaManager>(CrossMediaManager.Current);
 		}
 	}
 }
