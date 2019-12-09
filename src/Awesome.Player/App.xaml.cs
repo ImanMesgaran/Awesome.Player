@@ -1,4 +1,5 @@
-﻿using Prism;
+﻿using Acr.UserDialogs;
+using Prism;
 using Prism.Ioc;
 using Awesome.Player.ViewModels;
 using Awesome.Player.Views;
@@ -42,6 +43,8 @@ namespace Awesome.Player
 
 			//var mediaManager = CrossMediaManager.Current;
 			containerRegistry.RegisterInstance<IMediaManager>(CrossMediaManager.Current);
+			containerRegistry.RegisterDialog<ResourceAddView, ResourceAddViewViewModel>();
+			containerRegistry.RegisterInstance<IUserDialogs>(UserDialogs.Instance);
 		}
 	}
 }

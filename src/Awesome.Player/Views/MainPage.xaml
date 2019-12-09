@@ -1,11 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Awesome.Player.Views.MainPage"
-             Title="{Binding Title}">
+<ContentPage
+	x:Class="Awesome.Player.Views.MainPage"
+	xmlns="http://xamarin.com/schemas/2014/forms"
+	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+	xmlns:forms="clr-namespace:MediaManager.Forms;assembly=MediaManager.Forms"
+	Title="{Binding Title}">
 
-    <StackLayout HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
-        <Label Text="Welcome to Xamarin Forms and Prism!" />
-    </StackLayout>
+	<forms:VideoView
+		x:Name="videoView"
+		Margin="0" />
+	<!--  Current="{Binding CurrentMedia}"  -->
+	<!--  Source="{Binding Source}"  -->
+
+	<!--
+		AutoPlay="True"
+		VideoHeight="150"
+	-->
+	<!--  Position="{Binding MediaFile.Position, Mode=TwoWay}"  -->
 
 </ContentPage>

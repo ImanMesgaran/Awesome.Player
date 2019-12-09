@@ -6,16 +6,15 @@ namespace Awesome.Player.Converters
 {
 	public class SecondsToTimeConverter : IValueConverter
 	{
+		private const string DEFAULT_FORMAT = @"mm\:ss";
+
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			if (value is int)
+			if (!(parameter is string format))
 			{
-				var seconds = TimeSpan.FromSeconds((int)value);
-
-				return $"{seconds.ToString(@"mm\:ss")}";
+				format = DEFAULT_FORMAT;
 			}
-
-			return string.Empty;
+			return ((TimeSpan)value).ToString(format);
 		}
 
 		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

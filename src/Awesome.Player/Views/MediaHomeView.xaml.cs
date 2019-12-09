@@ -17,10 +17,7 @@ namespace Awesome.Player.Views
 			InitializeComponent();
 
 			MediaManager = ((MediaHomeViewViewModel) this.BindingContext).MediaManager;
-
-			//videoView.Source = CrossMediaManager.Current.Queue.Current;
-			//videoView.Position=CrossMediaManager.Current.Queue.Current.
-			//CrossMediaManager.Current.
+			
 		}
 
 		public void Destroy()
@@ -28,6 +25,7 @@ namespace Awesome.Player.Views
 			MediaCollectionView.Behaviors?.Clear();
 		}
 
+		/*
 		private void OnCollectionViewSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if (e.CurrentSelection.FirstOrDefault() is MediaModel item)
@@ -37,5 +35,6 @@ namespace Awesome.Player.Views
 				MediaCollectionView.SelectedItem = null;
 			}
 		}
+		*/
 	}
 }

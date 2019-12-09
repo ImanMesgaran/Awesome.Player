@@ -7,11 +7,11 @@
 	xmlns:mm="clr-namespace:MediaManager.Forms;assembly=MediaManager.Forms"
 	xmlns:prism="http://prismlibrary.com"
 	xmlns:resources="clr-namespace:Awesome.Player.Resources;assembly=Awesome.Player"
+	xmlns:skia="clr-namespace:SkiaSharp.Views.Forms;assembly=SkiaSharp.Views.Forms"
 	xmlns:theming="clr-namespace:Awesome.Player.Theming;assembly=Awesome.Player"
 	prism:ViewModelLocator.AutowireViewModel="True"
 	BackgroundColor="DarkTurquoise"
 	NavigationPage.HasNavigationBar="False">
-	<!--  xmlns:customControl="clr-namespace:Awesome.Player.CustomControls;assembly=Awesome.Player"  -->
 
 	<ContentPage.Resources>
 		<ResourceDictionary>
@@ -30,8 +30,8 @@
 				<RowDefinition Height="70" />
 				<RowDefinition Height="150" />
 				<RowDefinition Height="*" />
+				<RowDefinition Height="50" />
 				<RowDefinition Height="Auto" />
-				<RowDefinition Height="70" />
 				<RowDefinition Height="70" />
 			</Grid.RowDefinitions>
 			<Grid.ColumnDefinitions>
@@ -59,7 +59,7 @@
 				Grid.Column="1"
 				Margin="5,15,15,5"
 				BackgroundColor="Transparent"
-				Command="{Binding GoBackToHomeCommand}"
+				Command="{prism:NavigateTo '/MediaHomeView'}"
 				HorizontalOptions="CenterAndExpand"
 				VerticalOptions="CenterAndExpand">
 				<ImageButton.Source>
@@ -69,8 +69,6 @@
 						Size="80" />
 				</ImageButton.Source>
 			</ImageButton>
-			<!--  Command="{prism:GoBack}"  -->
-
 
 			<Label
 				Grid.Row="1"
@@ -87,137 +85,72 @@
 				VerticalOptions="StartAndExpand"
 				VerticalTextAlignment="Center" />
 
-			<!--<formsVideoLibrary:VideoPlayer
-				x:Name="videoView"
-				Grid.Row="2"
-				Grid.Column="0"
-				Grid.ColumnSpan="2"
-				AreTransportControlsEnabled="True"
-				AutoPlay="True"
-				BackgroundColor="Black"
-				HeightRequest="200"
-				HorizontalOptions="FillAndExpand"
-				Source="{Binding Media.Link}"
-				VerticalOptions="Start" />-->
-
-			<!--  Note Label Custom-Control  -->
-			<!--<customControl:CustomSlider
-				Grid.Row="2"
-				Grid.Column="0"
-				Grid.ColumnSpan="2" />-->
-
-
 			<mm:VideoView
 				x:Name="videoView"
 				Grid.Row="2"
 				Grid.Column="0"
 				Grid.ColumnSpan="2"
 				BackgroundColor="DarkTurquoise"
-				ShowControls="False"
-				 />
-			<!--Source="{Binding Media.Link}"-->
-			<!--  IsVisible="{Binding Media, Converter={StaticResource formatToVisibility}}"  -->
+				ShowControls="False" />
 
-			<!--
-				Position="{Binding Media.Position}"
-				State="{Binding PlayingState}"
-			-->
-
-
-			<Grid
-				x:Name="SliderGrid"
+			<Label
+				x:Name="NoteLabel"
 				Grid.Row="3"
 				Grid.Column="0"
 				Grid.ColumnSpan="2"
-				Padding="0"
-				ColumnSpacing="0"
-				RowSpacing="20">
-				<!--  Temporary StackLayout  -->
-				<!--<StackLayout x:Name="NotesStackLayout" Orientation="Horizontal" />-->
+				HorizontalOptions="CenterAndExpand"
+				Text="{Binding Note}" />
 
-				<!--  Time-Line Label  -->
-				<!--<StackLayout BackgroundColor="Black">
-					<Label x:Name="TimeLabel" TextColor="AntiqueWhite" />-->
-				<!--<BoxView Width="1" Color="AntiqueWhite" />
-					<Label x:Name="Time1Label" TextColor="AntiqueWhite" />-->
+			<Grid
+				x:Name="SliderGrid"
+				Grid.Row="4"
+				Grid.Column="0"
+				Grid.ColumnSpan="2">
 
-				<!--</StackLayout>-->
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+				</Grid.RowDefinitions>
+
 				<Label
 					x:Name="TimeLabel"
+					Grid.Row="0"
 					BackgroundColor="Black"
 					HorizontalOptions="Start"
 					TextColor="AntiqueWhite"
+					TranslationX="{Binding TimeTextPosition}"
 					VerticalOptions="Start"
-					VerticalTextAlignment="Start" />
+					VerticalTextAlignment="Start">
+					<Label.FormattedText>
+						<FormattedString>
+							<Span Text="{Binding TimeSpanPosition, Converter={StaticResource SecondsToTimeConverter}}" />
+							<Span Text="|" />
+							<Span Text="{Binding TimeSpanDuration, Converter={StaticResource SecondsToTimeConverter}}" />
+						</FormattedString>
+					</Label.FormattedText>
+
+				</Label>
 
 				<!--  Default Slider  -->
 				<Slider
 					x:Name="PositionSlider"
-					Margin="25,20,25,25"
-					DragCompletedCommand="{Binding SliderDragCompletedCommand}"
-					Maximum="{Binding MusicDuration.TotalMilliseconds}"
-					Minimum="0"
+					Grid.Row="1"
+					Width="{Binding SliderWidth}"
+					Margin="25,0,25,0"
+					DragCompletedCommand="{Binding DragCompletedCommand}"
+					Maximum="{Binding Duration}"
+					Minimum="-1"
 					ThumbColor="Coral"
-					ValueChanged="PositionSlider_OnValueChanged"
-					VerticalOptions="End"
-					Value="{Binding NowDurationNum}" />
+					Value="{Binding Position}" />
+
+				<skia:SKCanvasView
+					x:Name="canvasView"
+					Grid.Row="2"
+					Margin="40,0,40,0"
+					PaintSurface="CanvasView_OnPaintSurface"
+					VerticalOptions="Start" />
 			</Grid>
-
-			<!--  Default Slider  -->
-			<!--<Slider
-				Grid.Row="2"
-				Grid.Column="0"
-				Grid.ColumnSpan="2"
-				Margin="10,0,10,10"
-				DragCompletedCommand="{Binding SliderDragCompletedCommand}"
-				Maximum="{Binding MusicDuration.TotalMilliseconds}"
-				Minimum="0"
-				ThumbColor="Coral"
-				Value="{Binding NowDurationNum}" />-->
-
-			<!--  Custom PositionSlider  -->
-			<!--<customRenderer:PositionSlider
-				Grid.Row="2"
-				Grid.Column="0"
-				Grid.ColumnSpan="2"
-				Margin="10,0,10,10"
-				DragCompletedCommand="{Binding SliderDragCompletedCommand}"
-				Maximum="{Binding MusicDuration.TotalMilliseconds}"
-				Minimum="0"
-				ThumbColor="Coral"
-				Value="{Binding NowDurationNum}" />-->
-			<!--
-				Position="{Binding Position}"
-				Duration="{Binding Duration}"
-				BindingContext="{x:Reference videoView}"
-			-->
-
-			<Grid
-				Grid.Row="4"
-				Grid.Column="0"
-				Grid.ColumnSpan="2">
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="70" />
-					<ColumnDefinition Width="70" />
-					<ColumnDefinition Width="70" />
-				</Grid.ColumnDefinitions>
-				<ImageButton
-					Grid.Row="0"
-					Grid.Column="1"
-					Margin="5,15,15,5"
-					BackgroundColor="Transparent"
-					Command="{Binding GoBackToHomeCommand}"
-					HorizontalOptions="CenterAndExpand"
-					VerticalOptions="CenterAndExpand">
-					<ImageButton.Source>
-						<FontImageSource
-							FontFamily="{StaticResource FontAwesomeProRegular}"
-							Glyph="{x:Static resources:AppIcons.DownArrowFont}"
-							Size="80" />
-					</ImageButton.Source>
-				</ImageButton>
-			</Grid>
-
 
 			<!--  Bottom Buttons  -->
 			<Grid
@@ -241,7 +174,6 @@
 					TextColor="AntiqueWhite">
 					<Label.GestureRecognizers>
 						<TapGestureRecognizer Command="{Binding AddNoteCommand}" CommandParameter="{x:Reference PositionSlider}" />
-						<!--<ClickGestureRecognizer Clicked="ClickGestureRecognizer_OnClicked"></ClickGestureRecognizer>-->
 					</Label.GestureRecognizers>
 				</Label>
 				<Label
@@ -271,5 +203,4 @@
 			</Grid>
 		</Grid>
 	</ContentPage.Content>
-
 </ContentPage>

@@ -12,6 +12,7 @@
 	xmlns:resources="clr-namespace:Awesome.Player.Resources;assembly=Awesome.Player"
 	xmlns:theming="clr-namespace:Awesome.Player.Theming;assembly=Awesome.Player"
 	xmlns:viewmodels="clr-namespace:Awesome.Player.ViewModels"
+	x:Name="MediaHomePage"
 	prism:ViewModelLocator.AutowireViewModel="True"
 	x:DataType="viewmodels:MediaHomeViewViewModel">
 
@@ -26,237 +27,260 @@
 	</ContentPage.Resources>
 
 	<ContentPage.Content>
+		<StackLayout>
 
-		<!--  Search and ScrollBar Header  -->
-		<Grid RowSpacing="0">
-			<Grid.RowDefinitions>
-				<RowDefinition Height="40" />
-				<RowDefinition Height="50" />
-				<RowDefinition Height="50" />
-				<RowDefinition Height="1" />
-				<RowDefinition Height="*" />
-				<RowDefinition Height="Auto" />
-			</Grid.RowDefinitions>
-
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="7*" />
-				<ColumnDefinition Width="2*" />
-			</Grid.ColumnDefinitions>
-
-			<Label
-				Grid.ColumnSpan="2"
-				Margin="5,10,5,0"
-				FontSize="Large"
-				HorizontalOptions="CenterAndExpand"
-				HorizontalTextAlignment="Center"
-				Text="Search" />
-
-			<SearchBar
-				x:Name="ListViewSearchBar"
-				Grid.Row="1"
-				Grid.Column="0"
-				BackgroundColor="{StaticResource WhiteColor}"
-				HorizontalOptions="FillAndExpand"
-				HorizontalTextAlignment="Center"
-				Placeholder="Search Library"
-				TextColor="{StaticResource BlackColor}"
-				VerticalOptions="CenterAndExpand" />
-			<!--  Text="{Binding SearchBoxText, Mode=TwoWay}"  -->
-
-			<Button
-				Grid.Row="1"
-				Grid.Column="1"
-				BackgroundColor="Transparent"
-				Command="{prism:GoBack}"
-				FontAttributes="None"
-				Text="Cancel"
-				TextColor="DarkGray" />
-
-			<CollectionView
-				Grid.Row="2"
-				Grid.Column="0"
-				Grid.ColumnSpan="2"
-				ItemsLayout="HorizontalList">
-
-				<CollectionView.ItemsSource>
-					<x:Array Type="{x:Type x:String}">
-						<x:String>ALL</x:String>
-						<x:String>TRACKS</x:String>
-						<x:String>PEOPLE</x:String>
-						<x:String>ALBUMS</x:String>
-						<x:String>PLAYLIST</x:String>
-					</x:Array>
-				</CollectionView.ItemsSource>
-
-				<CollectionView.ItemTemplate>
-					<DataTemplate>
-						<StackLayout Padding="15,10,15,10">
-							<Label Margin="10" Text="{Binding}" />
-						</StackLayout>
-					</DataTemplate>
-				</CollectionView.ItemTemplate>
-			</CollectionView>
 			<!--  Search and ScrollBar Header  -->
-
-			<!--  Media ListView  -->
-			<CollectionView
-				x:Name="MediaCollectionView"
-				Grid.Row="4"
-				Grid.Column="0"
-				Grid.ColumnSpan="2"
-				ItemsLayout="VerticalList"
-				ItemsSource="{Binding Medias}"
-				SelectionChanged="OnCollectionViewSelectionChanged"
-				SelectionChangedCommand="{Binding ItemTappedCommand}"
-				SelectionMode="Single">
-
-				<CollectionView.ItemTemplate>
-					<DataTemplate x:DataType="models:MediaModel">
-						<Grid Padding="10">
-							<Grid.RowDefinitions>
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="1" />
-							</Grid.RowDefinitions>
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="70" />
-								<ColumnDefinition Width="*" />
-								<ColumnDefinition Width="60" />
-							</Grid.ColumnDefinitions>
-
-							<forms:CachedImage
-								Grid.Row="0"
-								Grid.RowSpan="3"
-								Aspect="AspectFit"
-								CacheDuration="15"
-								HeightRequest="60"
-								Source="{Binding Image, Converter={StaticResource stringToUri}}"
-								WidthRequest="60" />
-
-							<Label
-								Grid.Row="0"
-								Grid.Column="1"
-								FontAttributes="Bold"
-								LineBreakMode="TailTruncation"
-								Text="{Binding Caption}" />
-
-							<Label
-								Grid.Row="1"
-								Grid.Column="1"
-								FontAttributes="Bold"
-								LineBreakMode="TailTruncation"
-								Text="{Binding Title}" />
-
-							<Label
-								Grid.Row="2"
-								Grid.Column="1"
-								FontAttributes="Italic"
-								LineBreakMode="TailTruncation"
-								Text="{Binding Views}"
-								VerticalOptions="End" />
-
-							<Grid
-								Grid.Row="3"
-								Grid.Column="0"
-								Grid.ColumnSpan="3">
-								<BoxView Color="DimGray" />
-							</Grid>
-						</Grid>
-					</DataTemplate>
-				</CollectionView.ItemTemplate>
-			</CollectionView>
-
-			<!--  Bottom Player  -->
-			<Grid
-				Grid.Row="5"
-				Grid.Column="0"
-				Grid.ColumnSpan="2"
-				BackgroundColor="#222326"
-				ColumnSpacing="20"
-				IsVisible="{Binding IsVisible}"
-				VerticalOptions="EndAndExpand">
+			<Grid RowSpacing="0">
 				<Grid.RowDefinitions>
-					<RowDefinition Height="70" />
+					<RowDefinition Height="40" />
 					<RowDefinition Height="50" />
-					<RowDefinition Height="2" />
+					<RowDefinition Height="40" />
+					<RowDefinition Height="1" />
+					<RowDefinition Height="*" />
+					<RowDefinition Height="Auto" />
 				</Grid.RowDefinitions>
+
 				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="10" />
-					<ColumnDefinition Width="*" />
 					<ColumnDefinition Width="7*" />
-					<ColumnDefinition Width="*" />
-					<ColumnDefinition Width="10" />
+					<ColumnDefinition Width="2*" />
 				</Grid.ColumnDefinitions>
 
-				<forms1:VideoView
-					x:Name="videoView"
+				<Label
 					Grid.Row="0"
+					Grid.ColumnSpan="2"
+					Margin="5,10,5,0"
+					FontSize="Large"
+					HorizontalOptions="CenterAndExpand"
+					HorizontalTextAlignment="Center"
+					Text="Search" />
+
+				<SearchBar
+					x:Name="ListViewSearchBar"
+					Grid.Row="1"
 					Grid.Column="0"
-					Margin="0"
-					BackgroundColor="#222326"
-					ShowControls="False"
-					VerticalOptions="FillAndExpand" />
-				<!--
-					AutoPlay="True"
-					VideoHeight="150"
-				-->
-				<!--  Position="{Binding MediaFile.Position, Mode=TwoWay}"  -->
+					BackgroundColor="{StaticResource WhiteColor}"
+					HorizontalOptions="FillAndExpand"
+					HorizontalTextAlignment="Center"
+					Placeholder="Search Library"
+					TextColor="{StaticResource BlackColor}"
+					VerticalOptions="CenterAndExpand" />
+				<!--  Text="{Binding SearchBoxText, Mode=TwoWay}"  -->
 
 				<ImageButton
 					Grid.Row="1"
 					Grid.Column="1"
-					Margin="5"
 					BackgroundColor="Transparent"
-					Command="{Binding PlayPauseCommand}">
+					Command="{Binding OpenPickerDialog}">
 					<ImageButton.Source>
-						<FontImageSource FontFamily="{StaticResource FontAwesomeProSolid}" Glyph="{Binding PlayPauseImage}" />
+						<FontImageSource
+							FontFamily="{StaticResource FontAwesomeProLight}"
+							Glyph="{x:Static resources:AppIcons.PlusFont}"
+							Color="DarkGray" />
 					</ImageButton.Source>
+					<!--
+						FontAttributes="None"
+						Text="Cancel"
+						TextColor="DarkGray"
+					-->
+
 				</ImageButton>
 
-				<StackLayout
-					Grid.Row="1"
-					Grid.Column="2"
-					HorizontalOptions="CenterAndExpand"
-					VerticalOptions="CenterAndExpand">
-					<Label
-						HorizontalOptions="Center"
-						LineBreakMode="TailTruncation"
-						Text="Binding Media.Caption} ************************"
-						TextColor="AntiqueWhite"
-						VerticalTextAlignment="Center" />
-
-					<Label
-						FontSize="Caption"
-						HorizontalOptions="Center"
-						LineBreakMode="WordWrap"
-						Text="Binding Media.Title}"
-						TextColor="AntiqueWhite"
-						VerticalTextAlignment="Center" />
-				</StackLayout>
-
-				<ImageButton
-					Grid.Row="1"
-					Grid.Column="3"
-					Margin="5"
-					BackgroundColor="Transparent"
-					Command="{Binding LikeCommand}">
-					<ImageButton.Source>
-						<FontImageSource FontFamily="{Binding LikeFontFamily}" Glyph="{x:Static resources:AppIcons.Like}" />
-					</ImageButton.Source>
-				</ImageButton>
-
-				<ProgressBar
+				<CollectionView
 					Grid.Row="2"
 					Grid.Column="0"
-					Grid.ColumnSpan="5"
-					Progress="{Binding Progress}"
-					VerticalOptions="End" />
+					Grid.ColumnSpan="2"
+					HorizontalOptions="FillAndExpand"
+					ItemsLayout="HorizontalList"
+					VerticalOptions="CenterAndExpand">
 
+					<CollectionView.ItemsSource>
+						<x:Array Type="{x:Type x:String}">
+							<x:String>ALL</x:String>
+							<x:String>TRACKS</x:String>
+							<x:String>PEOPLE</x:String>
+							<x:String>ALBUMS</x:String>
+							<x:String>PLAYLIST</x:String>
+						</x:Array>
+					</CollectionView.ItemsSource>
+
+					<CollectionView.ItemTemplate>
+						<DataTemplate>
+							<StackLayout Padding="15,10,15,10">
+								<Label Margin="10" Text="{Binding .}" />
+							</StackLayout>
+						</DataTemplate>
+					</CollectionView.ItemTemplate>
+				</CollectionView>
+				<!--  Search and ScrollBar Header  -->
+
+				<!--<BoxView
+					Grid.Row="3"
+					Grid.Column="0"
+					Grid.ColumnSpan="2"
+					BackgroundColor="LightGray" />-->
+
+				<!--  Media ListView  -->
+				<CollectionView
+					x:Name="MediaCollectionView"
+					Grid.Row="4"
+					Grid.Column="0"
+					Grid.ColumnSpan="2"
+					ItemsLayout="VerticalList"
+					ItemsSource="{Binding Medias}"
+					SelectedItem="{Binding SelectedMediaItem}"
+					SelectionChangedCommand="{Binding ItemTappedCommand}"
+					SelectionChangedCommandParameter="{Binding SelectedMediaItem}"
+					SelectionMode="Single">
+					<!--  SelectionChanged="OnCollectionViewSelectionChanged"  -->
+
+					<CollectionView.ItemTemplate>
+						<DataTemplate x:DataType="models:MediaModel">
+							<Grid Padding="10">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="1" />
+								</Grid.RowDefinitions>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="70" />
+									<ColumnDefinition Width="*" />
+									<ColumnDefinition Width="60" />
+								</Grid.ColumnDefinitions>
+
+								<forms:CachedImage
+									Grid.Row="0"
+									Grid.RowSpan="3"
+									Aspect="AspectFit"
+									CacheDuration="15"
+									HeightRequest="60"
+									Source="{Binding Image, Converter={StaticResource stringToUri}}"
+									WidthRequest="60" />
+
+								<Label
+									Grid.Row="0"
+									Grid.Column="1"
+									FontAttributes="Bold"
+									LineBreakMode="TailTruncation"
+									Text="{Binding Caption}" />
+
+								<Label
+									Grid.Row="1"
+									Grid.Column="1"
+									FontAttributes="Bold"
+									LineBreakMode="TailTruncation"
+									Text="{Binding Title}" />
+
+								<Label
+									Grid.Row="2"
+									Grid.Column="1"
+									FontAttributes="Italic"
+									LineBreakMode="TailTruncation"
+									Text="{Binding Views}"
+									VerticalOptions="End" />
+
+								<Grid
+									Grid.Row="3"
+									Grid.Column="0"
+									Grid.ColumnSpan="3">
+									<BoxView Color="DimGray" />
+								</Grid>
+							</Grid>
+						</DataTemplate>
+					</CollectionView.ItemTemplate>
+				</CollectionView>
+
+				<!--  Bottom Player  -->
+				<Grid
+					Grid.Row="5"
+					Grid.Column="0"
+					Grid.ColumnSpan="2"
+					BackgroundColor="#114b4f"
+					ColumnSpacing="20"
+					IsVisible="{Binding IsVisible}"
+					VerticalOptions="EndAndExpand">
+
+					<Grid.GestureRecognizers>
+						<TapGestureRecognizer Command="{prism:NavigateTo MediaPlayerPage}" />
+					</Grid.GestureRecognizers>
+
+					<Grid.RowDefinitions>
+						<RowDefinition Height="{Binding VideoGridHeight}" />
+						<RowDefinition Height="50" />
+						<RowDefinition Height="2" />
+					</Grid.RowDefinitions>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="10" />
+						<ColumnDefinition Width="*" />
+						<ColumnDefinition Width="7*" />
+						<ColumnDefinition Width="*" />
+						<ColumnDefinition Width="10" />
+					</Grid.ColumnDefinitions>
+
+					<forms1:VideoView
+						x:Name="videoView"
+						Grid.Row="0"
+						Grid.Column="2"
+						Margin="0"
+						BackgroundColor="Transparent"
+						IsVisible="{Binding VideoVisible}"
+						VideoAspect="AspectFit"
+						VideoHeight="70" />
+
+					<ImageButton
+						Grid.Row="1"
+						Grid.Column="1"
+						Margin="5"
+						BackgroundColor="Transparent"
+						Command="{Binding PlayPauseCommand}">
+						<ImageButton.Source>
+							<FontImageSource FontFamily="{StaticResource FontAwesomeProSolid}" Glyph="{Binding PlayPauseImage}" />
+						</ImageButton.Source>
+					</ImageButton>
+
+					<StackLayout
+						Grid.Row="1"
+						Grid.Column="2"
+						HorizontalOptions="CenterAndExpand"
+						VerticalOptions="CenterAndExpand">
+						<Label
+							HorizontalOptions="Center"
+							LineBreakMode="TailTruncation"
+							Text="Binding Media.Caption} ************************"
+							TextColor="AntiqueWhite"
+							VerticalTextAlignment="Center" />
+
+						<Label
+							FontSize="Caption"
+							HorizontalOptions="Center"
+							LineBreakMode="WordWrap"
+							Text="Binding Media.Title}"
+							TextColor="AntiqueWhite"
+							VerticalTextAlignment="Center" />
+					</StackLayout>
+
+					<ImageButton
+						Grid.Row="1"
+						Grid.Column="3"
+						Margin="5"
+						BackgroundColor="Transparent"
+						Command="{Binding LikeCommand}">
+						<ImageButton.Source>
+							<FontImageSource FontFamily="{Binding LikeFontFamily}" Glyph="{x:Static resources:AppIcons.Like}" />
+						</ImageButton.Source>
+					</ImageButton>
+
+					<ProgressBar
+						Grid.Row="2"
+						Grid.Column="0"
+						Grid.ColumnSpan="5"
+						Progress="{Binding Progress}"
+						VerticalOptions="End" />
+
+				</Grid>
 			</Grid>
-		</Grid>
-		<!--  Bottom Player  -->
-
+			<!--  Bottom Player  -->
+		</StackLayout>
 
 	</ContentPage.Content>
 </ContentPage>

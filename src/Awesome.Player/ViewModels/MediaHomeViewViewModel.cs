@@ -14,87 +14,21 @@ using MediaManager;
 using MediaManager.Library;
 using MediaManager.Media;
 using MediaManager.Player;
+using Plugin.FilePicker;
 using Prism.Navigation;
 using Prism.Services;
+using Prism.Services.Dialogs;
 using Xamarin.Forms;
 
 namespace Awesome.Player.ViewModels
 {
 	public class MediaHomeViewViewModel : BaseProvider
 	{
+		#region properties
+
+		private readonly IDialogService _dialogService;
 		public IMediaManager MediaManager { get; }
-
-		/// <summary>
-		///     The ListView item tapped command
-		/// </summary>
-		private DelegateCommand<MediaModel> _itemTappedCommand;
-
-		/// <summary>
-		///     Gets the ListView item tapped command.
-		/// </summary>
-		/// <value>The item tapped command.</value>
-		public DelegateCommand<MediaModel> ItemTappedCommand =>
-			_itemTappedCommand ??
-			(_itemTappedCommand = new DelegateCommand<MediaModel>(ExecuteMediaItemTappedCommand));
-
-		private async void ExecuteMediaItemTappedCommand(MediaModel media)
-		{
-			if (media == null) return;
-
-			//var currentMedia = CrossMediaManager.Current.IsPlaying();
-
-			//if (CrossMediaManager.Current.IsPlaying() && CrossMediaManager.Current.Queue.Current.Title != media.Title)
-			//{
-			//	await CrossMediaManager.Current.Stop();
-			//}
-
-			//await CrossMediaManager.Current.Stop();
-
-
-			//var mediaItem = (MediaItem)await CrossMediaManager.Current.Extractor.CreateMediaItem(media.Link);
-			//Debug.WriteLine($"************************************************** HOMEPAGE ONSELECT MEDIA LINK: {media.Link} ***********************************\n");
-			
-			//await CrossMediaManager.Current.Play(media.Link);
-			//await CrossMediaManager.Current.Play("http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4");
-			try
-			{
-				
-				var navigationParameters = new NavigationParameters();
-				navigationParameters.Add("mediaModel", media);
-				await NavigationService.NavigateAsync("MediaPlayerPage", navigationParameters);
-				
-			}
-			catch (Exception ex) {ex.DebugModeExceptionLog("Navigate from MainPage");}
-		}
-
-		private DelegateCommand _playPauseCommand;
-		public DelegateCommand PlayPauseCommand =>
-			_playPauseCommand ?? (_playPauseCommand = new DelegateCommand(PlayPause));
-
-		private async void PlayPause()
-		{
-			if (MediaManager.IsPlaying())
-				PlayPauseImage = AppIcons.PlayFont;
-			else
-				PlayPauseImage = AppIcons.PauseFont;
-
-			await MediaManager.PlayPause();
-		}
-
-		private DelegateCommand _likeCommand;
-		public DelegateCommand LikeCommand =>
-			_likeCommand ?? (_likeCommand = new DelegateCommand(LikeMedia));
-
-		private void LikeMedia()
-		{
-			if (IsLiked)
-				LikeFontFamily = Device.RuntimePlatform == Device.Android ? "FontAwesome5Pro-Regular-400.otf#Font Awesome 5 Pro Regular" : null; // set only for Android
-			else
-				LikeFontFamily = Device.RuntimePlatform == Device.Android ? "FontAwesome5Pro-Solid-900.otf#Font Awesome 5 Pro Solid" : null; // set only for Android
-
-			IsLiked = !IsLiked;
-		}
-
+		
 		private MediaModel _mediaFile;
 		public MediaModel MediaFile
 		{
@@ -109,13 +43,6 @@ namespace Awesome.Player.ViewModels
 			set { SetProperty(ref _medias, value); }
 		}
 
-		//private TimeSpan _musicDuration;
-		//public TimeSpan MusicDuration
-		//{
-		//	get { return _musicDuration; }
-		//	set { SetProperty(ref _musicDuration, value); }
-		//}
-
 		private IMediaItem _source;
 		public IMediaItem Source
 		{
@@ -124,7 +51,7 @@ namespace Awesome.Player.ViewModels
 		}
 
 		private bool _isVisible;
-		public bool IsVisible 
+		public bool IsVisible
 		{
 			get
 			{
@@ -133,11 +60,15 @@ namespace Awesome.Player.ViewModels
 			}
 			set { SetProperty(ref _isVisible, value); }
 		}
-		
-		private string _playPauseImage =  AppIcons.PauseFont;
+
+		private string _playPauseImage;
 		public string PlayPauseImage
 		{
-			get => _playPauseImage;
+			get
+			{
+				_playPauseImage = MediaManager.IsPlaying() ? AppIcons.PauseFont : AppIcons.PlayFont;
+				return _playPauseImage;
+			}
 			set => SetProperty(ref _playPauseImage, value);
 		}
 
@@ -147,7 +78,7 @@ namespace Awesome.Player.ViewModels
 			get => _likeFontFamily;
 			set => SetProperty(ref _likeFontFamily, value);
 		}
-		
+
 		private double _progress;
 		public double Progress
 		{
@@ -155,7 +86,7 @@ namespace Awesome.Player.ViewModels
 			set => SetProperty(ref _progress, value);
 		}
 		public IMediaItem CurrentMediaItem => MediaManager.Queue.Current;
-		
+
 		private FormattedString _currentMediaItemText;
 		public FormattedString CurrentMediaItemText
 		{
@@ -184,18 +115,132 @@ namespace Awesome.Player.ViewModels
 			set { SetProperty(ref _isLiked, value); }
 		}
 
+		private IMediaItem _currentMedia;
+		public IMediaItem CurrentMedia
+		{
+			get { return _currentMedia; }
+			set { SetProperty(ref _currentMedia, value); }
+		}
+
+		private bool _videoVisible;
+		public bool VideoVisible
+		{
+			get
+			{
+				_videoVisible = CrossMediaManager.Current.Queue.Current.MediaType == MediaType.Video;
+				VideoGridHeight = _videoVisible ? 70 : 0;
+				return _videoVisible;
+			}
+			set { SetProperty(ref _videoVisible, value); }
+		}
+
+		private int _videoGridHeight = 70;
+		public int VideoGridHeight
+		{
+			get { return _videoGridHeight; }
+			set { SetProperty(ref _videoGridHeight, value); }
+		}
+
+		private IMediaItem _selectedMediaItem;
+		public IMediaItem SelectedMediaItem
+		{
+			get => _selectedMediaItem;
+			set => SetProperty(ref _selectedMediaItem, value);
+		}
+
+		#endregion properties
+
+		#region Commands
+
+		private DelegateCommand<MediaModel> _itemTappedCommand;
+
+		public DelegateCommand<MediaModel> ItemTappedCommand =>
+			_itemTappedCommand ??
+			(_itemTappedCommand = new DelegateCommand<MediaModel>(ExecuteMediaItemTappedCommand));
+			
+		private DelegateCommand _playPauseCommand;
+		public DelegateCommand PlayPauseCommand =>
+			_playPauseCommand ?? (_playPauseCommand = new DelegateCommand(PlayPause));
+			
+		private DelegateCommand _likeCommand;
+		public DelegateCommand LikeCommand =>
+			_likeCommand ?? (_likeCommand = new DelegateCommand(LikeMedia));
+
+		private DelegateCommand _openPickerDialog;
+		public DelegateCommand OpenPickerDialog =>
+			_openPickerDialog ?? (_openPickerDialog = new DelegateCommand(ExecuteOpenPickerDialog));
+
+		void ExecuteOpenPickerDialog()
+		{
+			try
+			{
+				_dialogService.ShowDialog("ResourceAddView", CloseDialogCallback);
+			}
+			catch (Exception ex)
+			{
+				ex.DebugModeExceptionLog("ExecuteOpenPickerDialog Error:");
+			}
+		}
+
+		private void CloseDialogCallback(IDialogResult dialogResult)
+		{
+			if (dialogResult.Parameters.ContainsKey("selectedMediaItem"))
+			{
+				//var selectedMediaItem = (MediaItem)dialogResult.Parameters["selectedMediaItem"];
+				SelectedMediaItem = dialogResult.Parameters.GetValue<MediaItem>("selectedMediaItem");
+			}
+		}
+
+		private async void ExecuteMediaItemTappedCommand(MediaModel media)
+		{
+			if (media == null) return;
+
+			try
+			{
+				var navigationParameters = new NavigationParameters();
+				navigationParameters.Add("mediaModel", media);
+				await NavigationService.NavigateAsync("MediaPlayerPage", navigationParameters);
+			}
+			catch (Exception ex) {ex.DebugModeExceptionLog("Navigate from MainPage");}
+		}
+
+		private async void PlayPause()
+		{
+			if (MediaManager.IsPlaying())
+				PlayPauseImage = AppIcons.PlayFont;
+			else
+				PlayPauseImage = AppIcons.PauseFont;
+
+			await MediaManager.PlayPause();
+		}
+
+		private void LikeMedia()
+		{
+			if (IsLiked)
+				LikeFontFamily = Device.RuntimePlatform == Device.Android ? "FontAwesome5Pro-Regular-400.otf#Font Awesome 5 Pro Regular" : null; // set only for Android
+			else
+				LikeFontFamily = Device.RuntimePlatform == Device.Android ? "FontAwesome5Pro-Solid-900.otf#Font Awesome 5 Pro Solid" : null; // set only for Android
+
+			IsLiked = !IsLiked;
+		}
+
+
+		#endregion Commands
+
 		public MediaHomeViewViewModel(
 			INavigationService navigationService,
 			IPageDialogService pageDialogService,
 			IDeviceService deviceService,
-			IMediaManager mediaManager) : base(navigationService, pageDialogService, deviceService)
+			IMediaManager mediaManager,
+			IDialogService dialogService) : base(navigationService, pageDialogService, deviceService)
 		{
+			_dialogService = dialogService;
 			MediaManager = mediaManager ?? throw new ArgumentNullException(nameof(mediaManager));
 			
 			MediaManager.StateChanged += MediaManager_StateChanged;
 			MediaManager.PositionChanged += MediaManager_PositionChanged;
 			mediaManager.MediaItemChanged += MediaManager_MediaItemChanged;
-			
+
 			#region hard-coded files
 
 			Medias = new ObservableCollection<MediaModel>()
@@ -213,22 +258,26 @@ namespace Awesome.Player.ViewModels
 						new Note()
 						{
 							Text = "sample 1",
-							Position = 1682
+							Position = 0
 						},
 						new Note()
 						{
 							Text = "sample 2",
-							Position = 51529
+							Position = 53
 						},
 						new Note()
 						{
 							Text = "sample 3",
-							Position = 123247
+							Position = 107
+						},new Note()
+						{
+							Text = "sample 4",
+							Position = 160
 						},
 						new Note()
 						{
-							Text = "sample 4",
-							Position = 214488
+							Text = "sample 5",
+							Position = 214.488
 						}
 					}
 				},
@@ -289,9 +338,8 @@ namespace Awesome.Player.ViewModels
 
 			#endregion hard-coded files
 
-			//MusicDuration = TimeSpan.FromMilliseconds(1000);
 		}
-
+		
 		private void MediaManager_StateChanged(object sender, MediaManager.Playback.StateChangedEventArgs e)
 		{
 			if (MediaManager.IsPlaying())
@@ -305,13 +353,14 @@ namespace Awesome.Player.ViewModels
 
 			RaisePropertyChanged(nameof(IsVisible));
 			RaisePropertyChanged(nameof(CurrentMediaItem));
+			RaisePropertyChanged(nameof(VideoVisible));
 		}
 
 		private void MediaManager_PositionChanged(object sender, MediaManager.Playback.PositionChangedEventArgs e)
 		{
 			Progress = e.Position.TotalSeconds / MediaManager.Duration.TotalSeconds;
 		}
-
+		
 		private void MediaManager_MediaItemChanged(object sender, MediaManager.Media.MediaItemEventArgs e)
 		{
 			Source = e.MediaItem;
@@ -327,20 +376,12 @@ namespace Awesome.Player.ViewModels
 				navigationParameters.Add("mediaFile", media);
 				await NavigationService.NavigateAsync("MediaPlayerPage", navigationParameters);
 			}
-			catch (Exception ex)
-			{
-				
-			}
+			catch (Exception ex) {}
 		}
 
 		public override void OnNavigatedTo(INavigationParameters parameters)
 		{
-			if (parameters.ContainsKey("mediaFile"))
-			{
-				MediaFile = (MediaModel)parameters["mediaFile"];
-
-				DebugLogExtention.DebugModeGrandiosity("*************");
-			}
+			
 		}
 	}
 }

@@ -1,7 +1,9 @@
-﻿using Android.App;
+﻿using Acr.UserDialogs;
+using Android.App;
 using Android.Content.PM;
 using Android.OS;
 using MediaManager;
+using Plugin.CurrentActivity;
 using Prism;
 using Prism.Ioc;
 
@@ -20,6 +22,9 @@ namespace Awesome.Player.Droid
             global::Xamarin.Forms.Forms.Init(this, bundle);
 
             CrossMediaManager.Current.Init(this);
+            CrossCurrentActivity.Current.Init(this, bundle);
+            UserDialogs.Init(this);
+            Plugin.CurrentActivity.CrossCurrentActivity.Current.Init(this, bundle);
             Xamarin.Essentials.Platform.Init(this, bundle);
             FFImageLoading.Forms.Platform.CachedImageRenderer.Init(enableFastRenderer: true);
 

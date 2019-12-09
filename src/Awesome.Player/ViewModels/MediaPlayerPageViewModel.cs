@@ -16,6 +16,7 @@ using MediaManager.Queue;
 using Prism.Events;
 using Prism.Navigation;
 using Prism.Services;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 
@@ -53,35 +54,7 @@ namespace Awesome.Player.ViewModels
 			get { return _media; }
 			set { SetProperty(ref _media, value); }
 		}
-
-		private MediaPlayerState _playingState;
-		public MediaPlayerState PlayingState
-		{
-			get { return _playingState; }
-			set { SetProperty(ref _playingState, value); }
-		}
-
-		//private TimeSpan _nowDuration;
-		//public TimeSpan NowDuration
-		//{
-		//	get { return _nowDuration; }
-		//	set { SetProperty(ref _nowDuration, value); }
-		//}
-
-		private double _nowDurationNum;
-		public double NowDurationNum
-		{
-			get { return _nowDurationNum; }
-			set { SetProperty(ref _nowDurationNum, value); }
-		}
-
-		private TimeSpan _musicDuration;
-		public TimeSpan MusicDuration
-		{
-			get { return _musicDuration; }
-			set { SetProperty(ref _musicDuration, value); }
-		}
-
+		
 		private MediaItem _mediaItem;
 		public MediaItem MediaItem
 		{
@@ -89,33 +62,89 @@ namespace Awesome.Player.ViewModels
 			set { SetProperty(ref _mediaItem, value); }
 		}
 
-		private DelegateCommand _sliderDragCompletedCommand;
-		public DelegateCommand SliderDragCompletedCommand =>
-			_sliderDragCompletedCommand ?? (_sliderDragCompletedCommand = new DelegateCommand(ExecuteSliderDragCompletedCommand));
+		private double _position = 0;
+		public double Position
+		{
+			get => _position;
+			set
+			{
+				SetProperty(ref _position, value);
+			}
+		}
+		
+		private double _duration = 100;
+		public double Duration
+		{
+			get => _duration;
+			set => SetProperty(ref _duration, value);
+		}
+
+		private double _progress;
+		public double Progress
+		{
+			get => _progress;
+			set => SetProperty(ref _progress, value);
+		}
+
+		private bool _dragStarted = false;
+		public bool DragStarted
+		{
+			get => _dragStarted;
+			set => SetProperty(ref _dragStarted, value);
+		}
+
+		private TimeSpan _timeSpanPosition = TimeSpan.Zero;
+		public TimeSpan TimeSpanPosition
+		{
+			get => _timeSpanPosition;
+			set
+			{
+				SetProperty(ref _timeSpanPosition, value);
+			}
+		}
+
+		private TimeSpan _timeSpanDuration = TimeSpan.Zero;
+		public TimeSpan TimeSpanDuration
+		{
+			get => _timeSpanDuration;
+			set => SetProperty(ref _timeSpanDuration, value);
+		}
+
+		private double _timeTextPosition;
+		public double TimeTextPosition
+		{
+			get { return _timeTextPosition; }
+			set { SetProperty(ref _timeTextPosition, value); }
+		}
+
+		private double _sliderWidth;
+		public double SliderWidth
+		{
+			get { return _sliderWidth; }
+			set { SetProperty(ref _sliderWidth, value); }
+		}
+
+		private string _note;
+		public string Note
+		{
+			get { return _note; }
+			set { SetProperty(ref _note, value); }
+		}
+
+		private DelegateCommand _dragStartedCommand;
+		public DelegateCommand DragStartedCommand =>
+			_dragStartedCommand ?? (_dragStartedCommand = new DelegateCommand(() => DragStarted = true));
+
+		private DelegateCommand _dragCompletedCommand;
+		public DelegateCommand DragCompletedCommand =>
+			_dragCompletedCommand ?? (_dragCompletedCommand = new DelegateCommand(ExecuteSliderDragCompletedCommand));
 
 		async void ExecuteSliderDragCompletedCommand()
 		{
-			await CrossMediaManager.Current.SeekTo(TimeSpan.FromMilliseconds(NowDurationNum));
+			DragStarted = false;
+			await MediaManager.SeekTo(TimeSpan.FromSeconds(Position));
 		}
-
-		private DelegateCommand<MediaModel> _goBackToHomeCommand;
-		public DelegateCommand<MediaModel> GoBackToHomeCommand =>
-			_goBackToHomeCommand ?? (_goBackToHomeCommand = new DelegateCommand<MediaModel>(ExecuteGoBackToHomeCommand));
-
-		void ExecuteGoBackToHomeCommand(MediaModel media)
-		{
-			//if (PlayingState==MediaPlayerState.Playing)
-			//{
-				var navigationParameters = new NavigationParameters();
-				navigationParameters.Add("mediaFile", media);
-
-				NavigationService.GoBackAsync(navigationParameters);
-
-				//PlayingState = MediaPlayerState.Stopped;
-			//}
-
-		}
-
+		
 		private DelegateCommand<object> _addNoteCommand;
 		public DelegateCommand<object> AddNoteCommand =>
 			_addNoteCommand ?? (_addNoteCommand = new DelegateCommand<object>(ExecuteAddNoteCommand));
@@ -130,7 +159,16 @@ namespace Awesome.Player.ViewModels
 			Debug.WriteLine($"************************************************** Clicked Position: {position} ***********************************\n");
 			Debug.WriteLine($"************************************************** Slider Minimum: {slider.Minimum} ***********************************\n");
 			Debug.WriteLine($"************************************************** Slider Maximum: {slider.Maximum} ***********************************\n");
+			
+		}
 
+		private DelegateCommand _onBackToMainPageCommand;
+		public DelegateCommand OnBackToMainPageCommand =>
+			_onBackToMainPageCommand ?? (_onBackToMainPageCommand = new DelegateCommand(ExecuteOnBackToMainPageCommand));
+
+		void ExecuteOnBackToMainPageCommand()
+		{
+			NavigationService.NavigateAsync("/MediaHomeView");
 		}
 		
 		public MediaPlayerPageViewModel(
@@ -145,20 +183,43 @@ namespace Awesome.Player.ViewModels
 
 			MediaItem = new MediaItem();
 
-			//NowDuration = TimeSpan.FromMilliseconds(200);
-			MusicDuration = TimeSpan.FromMilliseconds(1000);
-			
-			//CrossMediaManager.Current.PositionChanged += Current_PositionChanged;
 			MediaManager.MediaPlayer.PropertyChanged += MediaPlayer_PropertyChanged;
 			mediaManager.MediaItemChanged += MediaManager_MediaItemChanged;
+			MediaManager.PositionChanged += MediaManager_PositionChanged;
 		}
 
-		private void Current_PositionChanged(object sender, MediaManager.Playback.PositionChangedEventArgs e)
+		private void MediaManager_PositionChanged(object sender, MediaManager.Playback.PositionChangedEventArgs e)
 		{
-			//NowDuration = e.Position;
-			NowDurationNum = e.Position.TotalMilliseconds;
-		}
+			if (!DragStarted)
+			{
+				TimeSpanPosition = e.Position;
+				Position = e.Position.TotalSeconds;
+			}
 
+			TimeSpanDuration = MediaManager.Duration;
+			Duration = MediaManager.Duration.TotalSeconds;
+			
+			TimeTextPosition = ((SliderWidth - 25) * Position) / Duration;
+			// note text in the position
+			var n = Media.Notes.FirstOrDefault(x => Math.Floor(x.Position) == Math.Floor(Position));
+
+			if (!string.IsNullOrEmpty(n?.Text))
+			{
+				Device.StartTimer(TimeSpan.FromSeconds(3), () =>
+				{
+					// Do something - change the note for 3 seconds
+					Note = n.Text;
+
+					return false; // True = Repeat again, False = Stop the timer
+				});
+			}
+			else
+			{
+				Note = "";
+			}
+
+		}
+		
 		private void MediaManager_MediaItemChanged(object sender, MediaManager.Media.MediaItemEventArgs e)
 		{
 			Source = e.MediaItem;
@@ -177,12 +238,25 @@ namespace Awesome.Player.ViewModels
 			if (parameters.ContainsKey("mediaFile"))
 				Media = (MediaModel)parameters["mediaFile"];
 
+			TimeSpanPosition = MediaManager.Position;
+			Position = MediaManager.Position.TotalSeconds;
+			TimeSpanDuration = MediaManager.Duration;
+			Duration = MediaManager.Duration.TotalSeconds;
+
+			if (Media == null) return;
+
+			if (MediaManager.State == MediaPlayerState.Paused && CrossMediaManager.Current.Queue.Current.MediaUri == Media.Link) return;
+			
+			if (!MediaManager.IsPlaying() || CrossMediaManager.Current.Queue.Current.MediaUri != Media.Link)
+			{
+				if (string.IsNullOrEmpty(Media.Link)) return;
+				await MediaManager.Stop();
+				await CrossMediaManager.Current.Play(Media.Link);
+			}
+
 			DebugLogExtention.DebugModeGrandiosity($"{Media.Caption}\n{Media.Title}");
 
-			await CrossMediaManager.Current.Play(Media.Link);
-
 			MediaItem = (MediaItem) await CrossMediaManager.Current.Extractor.CreateMediaItem(Media.Link);
-			MusicDuration = MediaItem.Duration;
 			Media.Extension = MediaItem.FileExtension.Trim('.');
 
 			Debug.WriteLine($"************************************************** MIDIA DIRATION {MediaItem.Duration} ***********************************\n");
