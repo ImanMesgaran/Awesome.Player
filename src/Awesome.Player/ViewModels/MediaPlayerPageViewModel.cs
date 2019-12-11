@@ -16,6 +16,8 @@ using MediaManager.Queue;
 using Prism.Events;
 using Prism.Navigation;
 using Prism.Services;
+using Prism.Services.Dialogs;
+using Realms;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
@@ -25,6 +27,7 @@ namespace Awesome.Player.ViewModels
 	public class MediaPlayerPageViewModel : BaseProvider
 	{
 		private IEventAggregator _eventAggregator;
+		private readonly IDialogService _dialogService;
 		public IMediaManager MediaManager { get; }
 		
 		private IMediaItem _source;
@@ -48,13 +51,20 @@ namespace Awesome.Player.ViewModels
 			set { SetProperty(ref _videoWidth, value); } 
 		}
 
-		private MediaModel _media;
-		public MediaModel Media
+		private MediaItem _media;
+		public MediaItem Media
 		{
 			get { return _media; }
 			set { SetProperty(ref _media, value); }
 		}
-		
+
+		//private List<Note> _notes;
+		//public List<Note> Notes
+		//{
+		//	get { return _notes; }
+		//	set { SetProperty(ref _notes, value); }
+		//}
+
 		private MediaItem _mediaItem;
 		public MediaItem MediaItem
 		{
@@ -153,14 +163,23 @@ namespace Awesome.Player.ViewModels
 		{
 			var slider = (Slider)obj;
 			var position = slider.Value;
+
+			var parameters = new NavigationParameters();
+			parameters.Add("position", position);
+			parameters.Add("mediaUri", Media.MediaUri);
+			NavigationService.NavigateAsync("EmptyView", parameters);
 			
-			Debug.WriteLine($"************************************************** Slider X: {slider.X} ***********************************\n");
-			Debug.WriteLine($"************************************************** Slider Y: {slider.Y} ***********************************\n");
-			Debug.WriteLine($"************************************************** Clicked Position: {position} ***********************************\n");
-			Debug.WriteLine($"************************************************** Slider Minimum: {slider.Minimum} ***********************************\n");
-			Debug.WriteLine($"************************************************** Slider Maximum: {slider.Maximum} ***********************************\n");
-			
+			//var parameters = new DialogParameters();
+			//parameters.Add("position", position);
+			//_dialogService.ShowDialog("EmptyView", parameters, CloseDialogCallback);
+			//_dialogService.ShowDialog("NoteAddView", parameters, CloseDialogCallback);
 		}
+
+		private void CloseDialogCallback(IDialogResult dialogResult)
+		{
+
+		}
+
 
 		private DelegateCommand _onBackToMainPageCommand;
 		public DelegateCommand OnBackToMainPageCommand =>
@@ -176,15 +195,19 @@ namespace Awesome.Player.ViewModels
 			IPageDialogService pageDialogService,
 			IDeviceService deviceService, 
 			IEventAggregator eventAggregator,
-			IMediaManager mediaManager) : base(navigationService, pageDialogService, deviceService)
+			IMediaManager mediaManager,
+			IDialogService dialogService) : base(navigationService, pageDialogService, deviceService)
 		{
+			_dialogService = dialogService;
 			_eventAggregator = eventAggregator;
 			MediaManager = mediaManager ?? throw new ArgumentNullException(nameof(mediaManager));
 
 			MediaItem = new MediaItem();
-
+			
 			MediaManager.MediaPlayer.PropertyChanged += MediaPlayer_PropertyChanged;
-			mediaManager.MediaItemChanged += MediaManager_MediaItemChanged;
+			//mediaManager.MediaItemChanged += MediaManager_MediaItemChanged;
+			MediaManager.MediaItemChanged += MediaManager_MediaItemChanged;
+			//CrossMediaManager.Current.MediaItemChanged += MediaManager_MediaItemChanged;
 			MediaManager.PositionChanged += MediaManager_PositionChanged;
 		}
 
@@ -194,29 +217,45 @@ namespace Awesome.Player.ViewModels
 			{
 				TimeSpanPosition = e.Position;
 				Position = e.Position.TotalSeconds;
+
 			}
 
-			TimeSpanDuration = MediaManager.Duration;
+			//TimeSpanDuration = MediaManager.Duration;
 			Duration = MediaManager.Duration.TotalSeconds;
 			
 			TimeTextPosition = ((SliderWidth - 25) * Position) / Duration;
+
+			//if (Position % 1 != 0) return;
+
+			// get realm instance
+			var realm = Realm.GetInstance();
+			// get notes for this MediaItem Track
+			var threadNotes = realm
+				.All<Note>()
+				.Where(x => x.MediaUri == Media.MediaUri);
+				//.FirstOrDefault(x => Math.Floor(x.Position) == Math.Floor(Position));
+
 			// note text in the position
-			var n = Media.Notes.FirstOrDefault(x => Math.Floor(x.Position) == Math.Floor(Position));
+			var n = threadNotes?.FirstOrDefault(x => x.Position == Math.Floor(Position));
 
 			if (!string.IsNullOrEmpty(n?.Text))
 			{
-				Device.StartTimer(TimeSpan.FromSeconds(3), () =>
+				Note = n.Text; 
+
+				//Device.StartTimer(TimeSpan.FromSeconds(n.Duration), () =>
+				Device.StartTimer(TimeSpan.FromSeconds(5), () =>
 				{
-					// Do something - change the note for 3 seconds
-					Note = n.Text;
+					// Do something - change the note for Duration seconds
+					Note = "";
 
 					return false; // True = Repeat again, False = Stop the timer
 				});
+
 			}
-			else
-			{
-				Note = "";
-			}
+			//else
+			//{
+			//	Note = "";
+			//}
 
 		}
 		
@@ -236,38 +275,57 @@ namespace Awesome.Player.ViewModels
 		public override async void OnNavigatedTo(INavigationParameters parameters)
 		{
 			if (parameters.ContainsKey("mediaFile"))
-				Media = (MediaModel)parameters["mediaFile"];
+				Media = (MediaItem)parameters["mediaFile"];
 
 			TimeSpanPosition = MediaManager.Position;
 			Position = MediaManager.Position.TotalSeconds;
 			TimeSpanDuration = MediaManager.Duration;
 			Duration = MediaManager.Duration.TotalSeconds;
 
+			//if (Media == null) Media= (MediaItem) CrossMediaManager.Current.Queue.Current;
 			if (Media == null) return;
 
-			if (MediaManager.State == MediaPlayerState.Paused && CrossMediaManager.Current.Queue.Current.MediaUri == Media.Link) return;
+			//GetThreadSafeNotes();
+
+			// get realm instance
+			var realm = Realm.GetInstance();
+			// get notes for this MediaItem Track
+			var notes = realm
+				.All<Note>()
+				.Where(n => n.MediaUri == Media.MediaUri)
+				.ToList();
+
+			_eventAggregator.GetEvent<NotesChangedEvent>().Publish(notes);
+			_eventAggregator.GetEvent<MixedEvent>().Publish((notes, SliderWidth, Duration));
+
+			if (MediaManager.State == MediaPlayerState.Paused && CrossMediaManager.Current.Queue.Current.FileName == Media.FileName) return;
 			
-			if (!MediaManager.IsPlaying() || CrossMediaManager.Current.Queue.Current.MediaUri != Media.Link)
+			if (!MediaManager.IsPlaying() || CrossMediaManager.Current.Queue.Current.FileName != Media.FileName)
 			{
-				if (string.IsNullOrEmpty(Media.Link)) return;
+				if (string.IsNullOrEmpty(Media.FileName)) return;
 				await MediaManager.Stop();
-				await CrossMediaManager.Current.Play(Media.Link);
+				await CrossMediaManager.Current.Play(Media);
 			}
 
-			DebugLogExtention.DebugModeGrandiosity($"{Media.Caption}\n{Media.Title}");
+			//MediaItem = (MediaItem) await CrossMediaManager.Current.Extractor.CreateMediaItem(Media.Link);
+			//Media.Extension = MediaItem.FileExtension.Trim('.');
 
-			MediaItem = (MediaItem) await CrossMediaManager.Current.Extractor.CreateMediaItem(Media.Link);
-			Media.Extension = MediaItem.FileExtension.Trim('.');
+			
 
-			Debug.WriteLine($"************************************************** MIDIA DIRATION {MediaItem.Duration} ***********************************\n");
-			Debug.WriteLine($"************************************************** MIDIA MediaUri {MediaItem.MediaUri} ***********************************\n");
-			Debug.WriteLine($"************************************************** MIDIA Title {MediaItem.Title} ***********************************\n");
-			Debug.WriteLine($"************************************************** MIDIA Display Title {MediaItem.DisplayTitle} ***********************************\n");
-			Debug.WriteLine($"************************************************** MIDIA Link: {Media.Link} ***********************************\n");
+		}
 
-			if (Media.Notes != null)
-				_eventAggregator.GetEvent<NotesChangedEvent>().Publish(Media.Notes);
+		public override void OnNavigatedFrom(INavigationParameters parameters)
+		{
+			
+		}
 
+		public override void Destroy()
+		{
+			MediaManager.MediaPlayer.PropertyChanged -= MediaPlayer_PropertyChanged;
+			MediaManager.MediaItemChanged -= MediaManager_MediaItemChanged;
+			MediaManager.PositionChanged -= MediaManager_PositionChanged;
+			//Notes = null;
+			GC.Collect();
 		}
 	}
 }

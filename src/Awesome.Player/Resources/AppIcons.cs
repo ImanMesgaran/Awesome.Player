@@ -53,5 +53,6 @@ namespace Awesome.Player.Resources
 		public static readonly string PlayFont = "\uf04b";
 		public static readonly string Like = "\uf004";
 		public static readonly string PlusFont = "\uf067";
+		public static readonly string NoteFont = "\uf3b5";
 	}
 }

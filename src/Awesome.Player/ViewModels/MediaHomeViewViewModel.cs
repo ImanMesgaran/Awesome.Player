@@ -14,10 +14,12 @@ using MediaManager;
 using MediaManager.Library;
 using MediaManager.Media;
 using MediaManager.Player;
+using MvvmHelpers;
 using Plugin.FilePicker;
 using Prism.Navigation;
 using Prism.Services;
 using Prism.Services.Dialogs;
+using Realms;
 using Xamarin.Forms;
 
 namespace Awesome.Player.ViewModels
@@ -28,20 +30,15 @@ namespace Awesome.Player.ViewModels
 
 		private readonly IDialogService _dialogService;
 		public IMediaManager MediaManager { get; }
-		
-		private MediaModel _mediaFile;
-		public MediaModel MediaFile
-		{
-			get { return _mediaFile; }
-			set { SetProperty(ref _mediaFile, value); }
-		}
 
-		private ObservableCollection<MediaModel> _medias;
-		public ObservableCollection<MediaModel> Medias
+		private ObservableRangeCollection<MediaItem> _medias ;
+		public ObservableRangeCollection<MediaItem> Medias
 		{
 			get { return _medias; }
 			set { SetProperty(ref _medias, value); }
 		}
+
+		//public IEnumerable<MediaItem> Medias { get; }
 
 		private IMediaItem _source;
 		public IMediaItem Source
@@ -85,6 +82,7 @@ namespace Awesome.Player.ViewModels
 			get => _progress;
 			set => SetProperty(ref _progress, value);
 		}
+
 		public IMediaItem CurrentMediaItem => MediaManager.Queue.Current;
 
 		private FormattedString _currentMediaItemText;
@@ -115,19 +113,12 @@ namespace Awesome.Player.ViewModels
 			set { SetProperty(ref _isLiked, value); }
 		}
 
-		private IMediaItem _currentMedia;
-		public IMediaItem CurrentMedia
-		{
-			get { return _currentMedia; }
-			set { SetProperty(ref _currentMedia, value); }
-		}
-
 		private bool _videoVisible;
 		public bool VideoVisible
 		{
 			get
 			{
-				_videoVisible = CrossMediaManager.Current.Queue.Current.MediaType == MediaType.Video;
+				_videoVisible = CrossMediaManager.Current.Queue.HasCurrent && CrossMediaManager.Current.Queue.Current.MediaType == MediaType.Video;
 				VideoGridHeight = _videoVisible ? 70 : 0;
 				return _videoVisible;
 			}
@@ -141,22 +132,29 @@ namespace Awesome.Player.ViewModels
 			set { SetProperty(ref _videoGridHeight, value); }
 		}
 
-		private IMediaItem _selectedMediaItem;
-		public IMediaItem SelectedMediaItem
+		private MediaItem _pickedMediaItem;
+		public MediaItem PickedMediaItem
 		{
-			get => _selectedMediaItem;
-			set => SetProperty(ref _selectedMediaItem, value);
+			get => _pickedMediaItem;
+			set => SetProperty(ref _pickedMediaItem, value);
+		}
+
+		private MediaItem _selectedMedia;
+		public MediaItem SelectedMedia
+		{
+			get { return _selectedMedia; }
+			set { SetProperty(ref _selectedMedia, value); }
 		}
 
 		#endregion properties
 
 		#region Commands
 
-		private DelegateCommand<MediaModel> _itemTappedCommand;
+		private DelegateCommand<MediaItem> _itemTappedCommand;
 
-		public DelegateCommand<MediaModel> ItemTappedCommand =>
+		public DelegateCommand<MediaItem> ItemTappedCommand =>
 			_itemTappedCommand ??
-			(_itemTappedCommand = new DelegateCommand<MediaModel>(ExecuteMediaItemTappedCommand));
+			(_itemTappedCommand = new DelegateCommand<MediaItem>(ExecuteMediaItemTappedCommand));
 			
 		private DelegateCommand _playPauseCommand;
 		public DelegateCommand PlayPauseCommand =>
@@ -170,6 +168,10 @@ namespace Awesome.Player.ViewModels
 		public DelegateCommand OpenPickerDialog =>
 			_openPickerDialog ?? (_openPickerDialog = new DelegateCommand(ExecuteOpenPickerDialog));
 
+		private DelegateCommand _videoTappedCommand;
+		public DelegateCommand VideoTappedCommand =>
+			_videoTappedCommand ?? (_videoTappedCommand = new DelegateCommand(ExecuteVideoTappedCommand));
+			
 		void ExecuteOpenPickerDialog()
 		{
 			try
@@ -182,23 +184,50 @@ namespace Awesome.Player.ViewModels
 			}
 		}
 
-		private void CloseDialogCallback(IDialogResult dialogResult)
+		private async void CloseDialogCallback(IDialogResult dialogResult)
 		{
-			if (dialogResult.Parameters.ContainsKey("selectedMediaItem"))
+			if (dialogResult.Parameters.ContainsKey("pickedMediaItem"))
 			{
 				//var selectedMediaItem = (MediaItem)dialogResult.Parameters["selectedMediaItem"];
-				SelectedMediaItem = dialogResult.Parameters.GetValue<MediaItem>("selectedMediaItem");
+				PickedMediaItem = dialogResult.Parameters.GetValue<MediaItem>("pickedMediaItem");
 			}
+
+			SaveMediaToPlaylist(PickedMediaItem);
+
+			await GetMediaItems();
 		}
 
-		private async void ExecuteMediaItemTappedCommand(MediaModel media)
+		private void SaveMediaToPlaylist(MediaItem pickedMediaItem)
+		{
+			var realm = Realm.GetInstance();
+
+			var mediaModel = (MediaModel)pickedMediaItem;
+			//var notes = new Note()
+			//{
+			//	MediaUri = mediaModel.MediaUri
+			//};
+
+			realm.Write(() =>
+			{
+				realm.Add(mediaModel);
+				//realm.Add(notes);
+			});
+			
+			var songs = realm.All<MediaModel>();
+			var songNotes = realm.All<Note>()
+				.Where(x=> x.MediaUri == mediaModel.MediaUri);
+		}
+
+		private async void ExecuteMediaItemTappedCommand(MediaItem media)
 		{
 			if (media == null) return;
 
 			try
 			{
+				//var mediaItem = (MediaItem) await CrossMediaManager.Current.Extractor.CreateMediaItem(media.FileName);
+				
 				var navigationParameters = new NavigationParameters();
-				navigationParameters.Add("mediaModel", media);
+				navigationParameters.Add("mediaFile", media);
 				await NavigationService.NavigateAsync("MediaPlayerPage", navigationParameters);
 			}
 			catch (Exception ex) {ex.DebugModeExceptionLog("Navigate from MainPage");}
@@ -224,6 +253,14 @@ namespace Awesome.Player.ViewModels
 			IsLiked = !IsLiked;
 		}
 
+		void ExecuteVideoTappedCommand()
+		{
+			var currentItem = CrossMediaManager.Current.Queue.Current;
+
+			var parameters = new NavigationParameters();
+			parameters.Add("mediaFile", currentItem);
+			NavigationService.NavigateAsync("MediaPlayerPage", parameters);
+		}
 
 		#endregion Commands
 
@@ -237,109 +274,31 @@ namespace Awesome.Player.ViewModels
 			_dialogService = dialogService;
 			MediaManager = mediaManager ?? throw new ArgumentNullException(nameof(mediaManager));
 			
+			Medias = new ObservableRangeCollection<MediaItem>();
+
 			MediaManager.StateChanged += MediaManager_StateChanged;
 			MediaManager.PositionChanged += MediaManager_PositionChanged;
-			mediaManager.MediaItemChanged += MediaManager_MediaItemChanged;
-
-			#region hard-coded files
-
-			Medias = new ObservableCollection<MediaModel>()
-			{
-				new MediaModel()
-				{
-					Image = "https://m.media-amazon.com/images/I/51JhWaf36qL._AA256_.jpg",
-					Title = "Vivaldi Four Season - Winter",
-					Caption = "Best of Classical Masterpieces",
-					Duration = "7:32",
-					Views = "3.2M",
-					Link = "https://dl.just-music.ir/music/BestOf/Vivaldi/The Very Best Of/CD1/01 - Violin Concerto, for violin, strings & continuo in E major ('La Primavera,' The.mp3",
-					Notes = new List<Note>()
-					{
-						new Note()
-						{
-							Text = "sample 1",
-							Position = 0
-						},
-						new Note()
-						{
-							Text = "sample 2",
-							Position = 53
-						},
-						new Note()
-						{
-							Text = "sample 3",
-							Position = 107
-						},new Note()
-						{
-							Text = "sample 4",
-							Position = 160
-						},
-						new Note()
-						{
-							Text = "sample 5",
-							Position = 214.488
-						}
-					}
-				},
-				new MediaModel()
-				{
-					Image = "https://static-s.aa-cdn.net/img/ios/537630791/8bf08ea73d7eec85c76e87408dfddbdc?v=1",
-					Title = "Beethoven Symphony No. 5, c",
-					Caption = "Beethoven Works - Ludwig Van Beethoven Songs",
-					Duration = "11:00",
-					Views = "1.8M",
-					Link = "https://dl.just-music.ir/music/BestOf/Vivaldi/The Very Best Of/CD1/01 - Violin Concerto, for violin, strings & continuo in E major ('La Primavera,' The.mp3"
-				},
-				new MediaModel()
-				{
-					Image = "https://m.media-amazon.com/images/I/41D7UYio+zL._AA256_.jpg",
-					Title = "Beethoven Symphony No. 8",
-					Caption = "Beethoven Works - Ludwig Van Beethoven Songs",
-					Duration = "8:16",
-					Views = "10.5M",
-					Link = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
-				},
-				new MediaModel()
-				{
-					Image = "https://i.guim.co.uk/img/static/sys-images/Guardian/Pix/arts/2006/01/26/moz3128.jpg?width=300&quality=85&auto=format&fit=max&s=17a0dec768c8dcf4a224fe1416be9f48",
-					Title = "Mozart – Eine kleine Nachtmusik",
-					Caption = "Best of Classical Masterpieces",
-					Duration = "7:32",
-					Views = "900.3K",
-					Link = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
-				},
-				new MediaModel()
-				{
-					Image = "https://m.media-amazon.com/images/I/51JhWaf36qL._AA256_.jpg",
-					Title = "Beethoven – Für Elise",
-					Caption = "Best of Classical Masterpieces",
-					Duration = "7:32",
-					Views = "2.3M",
-					Link = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
-				},
-				new MediaModel()
-				{
-					Image = "https://m.media-amazon.com/images/I/51JhWaf36qL._AA256_.jpg",
-					Title = "Vivaldi Four Season - Winter",
-					Caption = "Best of Classical Masterpieces",
-					Duration = "7:32",
-					Views = "4.1M",
-					Link = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
-				},new MediaModel()
-				{
-					Image = "https://m.media-amazon.com/images/I/51JhWaf36qL._AA256_.jpg",
-					Title = "Vivaldi Four Season - Winter",
-					Caption = "Best of Classical Masterpieces",
-					Duration = "7:32",
-					Views = "302K",
-					Link = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
-				}
-			};
-
-			#endregion hard-coded files
-
+			//mediaManager.MediaItemChanged += MediaManager_MediaItemChanged;
+			MediaManager.MediaItemChanged += MediaManager_MediaItemChanged;
 		}
-		
+
+		private async Task GetMediaItems()
+		{
+			var realm = Realm.GetInstance();
+			var models = realm.All<MediaModel>();
+
+			var tempCollection = new List<MediaItem>();
+
+			foreach (var model in models)
+			{
+				var item = (MediaItem) await CrossMediaManager.Current.Extractor.CreateMediaItem(model.MediaUri);
+				tempCollection.Add(item);
+			}
+			
+			Medias.ReplaceRange(tempCollection);
+		}
+
+
 		private void MediaManager_StateChanged(object sender, MediaManager.Playback.StateChangedEventArgs e)
 		{
 			if (MediaManager.IsPlaying())
@@ -379,9 +338,18 @@ namespace Awesome.Player.ViewModels
 			catch (Exception ex) {}
 		}
 
-		public override void OnNavigatedTo(INavigationParameters parameters)
+		public override async void OnNavigatedTo(INavigationParameters parameters)
 		{
-			
+			await GetMediaItems();
+
+		}
+
+		public override void Destroy()
+		{
+			MediaManager.StateChanged -= MediaManager_StateChanged;
+			MediaManager.PositionChanged -= MediaManager_PositionChanged;
+			MediaManager.MediaItemChanged -= MediaManager_MediaItemChanged;
+			GC.Collect();
 		}
 	}
 }

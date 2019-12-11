@@ -21,6 +21,8 @@
 			</ResourceDictionary.MergedDictionaries>
 			<converters:StringToUriImageSourceConverter x:Key="stringToUri" />
 			<converters:MediaFormatConverter x:Key="formatToVisibility" />
+			<converters:ArtistConverter x:Key="emptyArtist" />
+			<converters:StringToVisibilityConverter x:Key="stringToVisibility" />
 		</ResourceDictionary>
 	</ContentPage.Resources>
 
@@ -48,7 +50,7 @@
 				FontSize="15"
 				HorizontalOptions="StartAndExpand"
 				LineBreakMode="TailTruncation"
-				Text="{Binding Media.Caption}"
+				Text="{Binding Media.Artist, Converter={StaticResource emptyArtist}}"
 				TextColor="AntiqueWhite"
 				VerticalOptions="CenterAndExpand"
 				VerticalTextAlignment="Center" />
@@ -80,7 +82,7 @@
 				FontSize="20"
 				HorizontalOptions="StartAndExpand"
 				LineBreakMode="WordWrap"
-				Text="{Binding Media.Title}"
+				Text="{Binding Media.DisplayTitle}"
 				TextColor="AntiqueWhite"
 				VerticalOptions="StartAndExpand"
 				VerticalTextAlignment="Center" />
@@ -93,13 +95,27 @@
 				BackgroundColor="DarkTurquoise"
 				ShowControls="False" />
 
-			<Label
-				x:Name="NoteLabel"
+			<Frame
 				Grid.Row="3"
 				Grid.Column="0"
 				Grid.ColumnSpan="2"
-				HorizontalOptions="CenterAndExpand"
-				Text="{Binding Note}" />
+				Margin="15,0,15,0"
+				Padding="10"
+				BackgroundColor="DarkSlateGray"
+				BorderColor="Transparent"
+				CornerRadius="5"
+				HorizontalOptions="FillAndExpand"
+				IsVisible="{Binding Source={x:Reference NoteLabel}, Path=Text, Converter={StaticResource stringToVisibility}}"
+				VerticalOptions="CenterAndExpand">
+				<!--  BindingContext="{x:Reference NoteLabel}"  -->
+
+				<Label
+					x:Name="NoteLabel"
+					HorizontalOptions="CenterAndExpand"
+					Text="{Binding Note}"
+					TextColor="White" />
+
+			</Frame>
 
 			<Grid
 				x:Name="SliderGrid"
@@ -160,13 +176,32 @@
 				Margin="20,5,5,20"
 				HorizontalOptions="FillAndExpand">
 				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="2*" />
 					<ColumnDefinition Width="*" />
 					<ColumnDefinition Width="*" />
 					<ColumnDefinition Width="*" />
 					<ColumnDefinition Width="*" />
 				</Grid.ColumnDefinitions>
-				<Label
+
+				<!--  Add Note button  -->
+				<Button
+					BackgroundColor="Transparent"
+					Command="{Binding AddNoteCommand}"
+					CommandParameter="{x:Reference PositionSlider}"
+					FontSize="Micro"
+					HorizontalOptions="CenterAndExpand"
+					Text="Add note"
+					TextColor="AntiqueWhite"
+					VerticalOptions="CenterAndExpand">
+					<Button.ImageSource>
+						<FontImageSource
+							FontFamily="{StaticResource FontAwesomeProRegular}"
+							Glyph="{x:Static resources:AppIcons.PlusFont}"
+							Size="30" />
+					</Button.ImageSource>
+				</Button>
+
+				<!--<Label
 					Grid.Column="0"
 					FontFamily="{StaticResource FontAwesomeProSolid}"
 					FontSize="15"
@@ -175,7 +210,7 @@
 					<Label.GestureRecognizers>
 						<TapGestureRecognizer Command="{Binding AddNoteCommand}" CommandParameter="{x:Reference PositionSlider}" />
 					</Label.GestureRecognizers>
-				</Label>
+				</Label>-->
 				<Label
 					Grid.Column="1"
 					FontFamily="{StaticResource FontAwesomeProSolid}"

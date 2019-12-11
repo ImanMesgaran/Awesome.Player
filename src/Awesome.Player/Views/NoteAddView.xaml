@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Frame
+	x:Class="Awesome.Player.Views.NoteAddView"
+	xmlns="http://xamarin.com/schemas/2014/forms"
+	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+	xmlns:prism="http://prismlibrary.com"
+	Padding="10"
+	prism:DialogLayout.CloseOnBackgroundTapped="true"
+	prism:ViewModelLocator.AutowireViewModel="True"
+	BackgroundColor="White"
+	CornerRadius="10">
+	<Frame.Content>
+		<Grid>
+			<Grid.Resources>
+				<ResourceDictionary>
+					<Style x:Key="BaseButton" TargetType="Button">
+						<Setter Property="BackgroundColor" Value="#FFFFFFFF" />
+						<Setter Property="FontSize" Value="12" />
+					</Style>
+
+					<Style
+						x:Key="PrimaryButton"
+						BasedOn="{StaticResource BaseButton}"
+						TargetType="Button">
+						<Setter Property="BorderColor" Value="#FFE3E5F6" />
+						<Setter Property="BorderRadius" Value="25" />
+						<Setter Property="BorderWidth" Value="1" />
+						<Setter Property="CornerRadius" Value="20" />
+						<Setter Property="HeightRequest" Value="50" />
+					</Style>
+				</ResourceDictionary>
+			</Grid.Resources>
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
+			</Grid.RowDefinitions>
+
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="4*" />
+			</Grid.ColumnDefinitions>
+
+			<Label
+				Grid.Row="0"
+				Grid.Column="0"
+				Margin="24,0"
+				Text="Enter Note: " />
+
+			<Entry
+				Grid.Row="0"
+				Grid.Column="1"
+				Margin="24,0"
+				Placeholder="Enter a note"
+				Text="{Binding NoteText}" />
+
+			<Label
+				Grid.Row="1"
+				Grid.Column="0"
+				Margin="24,0"
+				Text="Note Duration: " />
+
+			<Entry
+				Grid.Row="1"
+				Grid.Column="1"
+				Margin="24,0"
+				Keyboard="Numeric"
+				Placeholder="Enter note duration time in sec"
+				Text="{Binding NoteDuration}" />
+
+			<!--<Button
+				Grid.Row="0"
+				Grid.Column="0"
+				Grid.ColumnSpan="2"
+				Margin="24,0"
+				Command="{Binding AddNoteToMediaCommand}"
+				Style="{StaticResource PrimaryButton}"
+				Text="Add this note to selected time" />-->
+		</Grid>
+	</Frame.Content>
+
+</Frame>

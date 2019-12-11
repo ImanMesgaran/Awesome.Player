@@ -3,18 +3,15 @@
 	x:Class="Awesome.Player.Views.MediaHomeView"
 	xmlns="http://xamarin.com/schemas/2014/forms"
 	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+	xmlns:Video="clr-namespace:MediaManager.Forms;assembly=MediaManager.Forms"
 	xmlns:converters="clr-namespace:Awesome.Player.Converters;assembly=Awesome.Player"
 	xmlns:customRenderer="clr-namespace:Awesome.Player.Core.CustomRenderer;assembly=Awesome.Player.Core"
 	xmlns:forms="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms"
-	xmlns:forms1="clr-namespace:MediaManager.Forms;assembly=MediaManager.Forms"
-	xmlns:models="clr-namespace:Awesome.Player.Models"
 	xmlns:prism="http://prismlibrary.com"
 	xmlns:resources="clr-namespace:Awesome.Player.Resources;assembly=Awesome.Player"
 	xmlns:theming="clr-namespace:Awesome.Player.Theming;assembly=Awesome.Player"
-	xmlns:viewmodels="clr-namespace:Awesome.Player.ViewModels"
 	x:Name="MediaHomePage"
-	prism:ViewModelLocator.AutowireViewModel="True"
-	x:DataType="viewmodels:MediaHomeViewViewModel">
+	prism:ViewModelLocator.AutowireViewModel="True">
 
 	<ContentPage.Resources>
 		<ResourceDictionary>
@@ -23,6 +20,8 @@
 				<theming:CustomFonts />
 			</ResourceDictionary.MergedDictionaries>
 			<converters:StringToUriImageSourceConverter x:Key="stringToUri" />
+			<converters:ArtistConverter x:Key="emptyArtist" />
+			<converters:DisplayImageConverter x:Key="displayImageConverter" />
 		</ResourceDictionary>
 	</ContentPage.Resources>
 
@@ -127,14 +126,32 @@
 					Grid.ColumnSpan="2"
 					ItemsLayout="VerticalList"
 					ItemsSource="{Binding Medias}"
-					SelectedItem="{Binding SelectedMediaItem}"
+					SelectedItem="{Binding SelectedMedia}"
 					SelectionChangedCommand="{Binding ItemTappedCommand}"
-					SelectionChangedCommandParameter="{Binding SelectedMediaItem}"
+					SelectionChangedCommandParameter="{Binding SelectedMedia}"
 					SelectionMode="Single">
 					<!--  SelectionChanged="OnCollectionViewSelectionChanged"  -->
 
+					<CollectionView.EmptyView>
+						<StackLayout>
+							<Label
+								Margin="10,25,10,10"
+								FontAttributes="Bold"
+								FontSize="18"
+								HorizontalOptions="Fill"
+								HorizontalTextAlignment="Center"
+								Text="No recent media has been found." />
+							<Label
+								FontAttributes="Italic"
+								FontSize="12"
+								HorizontalOptions="Fill"
+								HorizontalTextAlignment="Center"
+								Text="Please add new media from files, videos or uri." />
+						</StackLayout>
+					</CollectionView.EmptyView>
+
 					<CollectionView.ItemTemplate>
-						<DataTemplate x:DataType="models:MediaModel">
+						<DataTemplate>
 							<Grid Padding="10">
 								<Grid.RowDefinitions>
 									<RowDefinition Height="Auto" />
@@ -148,36 +165,44 @@
 									<ColumnDefinition Width="60" />
 								</Grid.ColumnDefinitions>
 
-								<forms:CachedImage
+								<Image
 									Grid.Row="0"
 									Grid.RowSpan="3"
 									Aspect="AspectFit"
-									CacheDuration="15"
 									HeightRequest="60"
-									Source="{Binding Image, Converter={StaticResource stringToUri}}"
-									WidthRequest="60" />
+									WidthRequest="60">
+									<Image.Source>
+										<FontImageSource
+											FontFamily="{StaticResource FontAwesomeBrands-Regular}"
+											Glyph="{x:Static resources:AppIcons.NoteFont}"
+											Size="14"
+											Color="CornflowerBlue" />
+									</Image.Source>
+								</Image>
+								<!--  Source="http://dsuarts.com/wp-content/uploads/2015/09/Music-Placeholder-300x300.png"  -->
+								<!--  Source="{Binding Image, Converter={StaticResource stringToUri}}"  -->
 
 								<Label
 									Grid.Row="0"
 									Grid.Column="1"
 									FontAttributes="Bold"
 									LineBreakMode="TailTruncation"
-									Text="{Binding Caption}" />
+									Text="{Binding Artist, Converter={StaticResource emptyArtist}}" />
 
 								<Label
 									Grid.Row="1"
 									Grid.Column="1"
 									FontAttributes="Bold"
 									LineBreakMode="TailTruncation"
-									Text="{Binding Title}" />
+									Text="{Binding DisplayTitle}" />
 
-								<Label
+								<!--<Label
 									Grid.Row="2"
 									Grid.Column="1"
 									FontAttributes="Italic"
 									LineBreakMode="TailTruncation"
 									Text="{Binding Views}"
-									VerticalOptions="End" />
+									VerticalOptions="End" />-->
 
 								<Grid
 									Grid.Row="3"
@@ -201,7 +226,8 @@
 					VerticalOptions="EndAndExpand">
 
 					<Grid.GestureRecognizers>
-						<TapGestureRecognizer Command="{prism:NavigateTo MediaPlayerPage}" />
+						<!--<TapGestureRecognizer Command="{prism:NavigateTo MediaPlayerPage}" />-->
+						<TapGestureRecognizer Command="{Binding VideoTappedCommand}" />
 					</Grid.GestureRecognizers>
 
 					<Grid.RowDefinitions>
@@ -217,7 +243,7 @@
 						<ColumnDefinition Width="10" />
 					</Grid.ColumnDefinitions>
 
-					<forms1:VideoView
+					<Video:VideoView
 						x:Name="videoView"
 						Grid.Row="0"
 						Grid.Column="2"

@@ -43,8 +43,10 @@ namespace Awesome.Player
 
 			//var mediaManager = CrossMediaManager.Current;
 			containerRegistry.RegisterInstance<IMediaManager>(CrossMediaManager.Current);
-			containerRegistry.RegisterDialog<ResourceAddView, ResourceAddViewViewModel>();
 			containerRegistry.RegisterInstance<IUserDialogs>(UserDialogs.Instance);
+			containerRegistry.RegisterDialog<ResourceAddView, ResourceAddViewViewModel>();
+			containerRegistry.RegisterDialog<NoteAddView, NoteAddViewViewModel>();
+			containerRegistry.RegisterForNavigation<EmptyView, EmptyViewViewModel>();
 		}
 	}
 }

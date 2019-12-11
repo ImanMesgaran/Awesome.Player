@@ -54,12 +54,12 @@ namespace Awesome.Player.ViewModels
 		{
 			try
 			{
-				var status = await CrossPermissions.Current.RequestPermissionAsync<StoragePermission>();
-				if (status != PermissionStatus.Granted)
-				{
-					await _userDialogs.AlertAsync("EnablePermissions");
-					return;
-				}
+				//var status = await CrossPermissions.Current.RequestPermissionAsync<StoragePermission>();
+				//if (status != PermissionStatus.Granted)
+				//{
+				//	await _userDialogs.AlertAsync("EnablePermissions");
+				//	return;
+				//}
 
 				var fileData = await CrossFilePicker.Current.PickFile();
 				if (fileData == null)
@@ -80,7 +80,7 @@ namespace Awesome.Player.ViewModels
 				SelectedItem = (MediaItem)await CrossMediaManager.Current.Extractor.CreateMediaItem(fileData.FilePath);
 
 				var parameters = new DialogParameters();
-				parameters.Add("selectedMediaItem", SelectedItem);
+				parameters.Add("pickedMediaItem", SelectedItem);
 
 				//if (RequestClose != null) RequestClose(parameters);
 				ExecuteCloseCommand(parameters);

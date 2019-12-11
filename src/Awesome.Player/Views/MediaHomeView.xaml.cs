@@ -23,6 +23,8 @@ namespace Awesome.Player.Views
 		public void Destroy()
 		{
 			MediaCollectionView.Behaviors?.Clear();
+			videoView.Dispose();
+			GC.Collect();
 		}
 
 		/*

@@ -10,7 +10,7 @@ namespace Awesome.Player.Converters
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var ext = ((MediaModel)value).Extension;
+            var ext = ((MediaModel)value).FileExtension;
 			
 			switch (ext)
             {
