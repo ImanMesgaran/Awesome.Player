@@ -25,8 +25,9 @@ namespace Awesome.Player
 		{
 			InitializeComponent();
 
-			await NavigationService.NavigateAsync("MyTabbedPage");
-			//await NavigationService.NavigateAsync("MyNavigationPage/MainPage");
+			//await NavigationService.NavigateAsync("MyTabbedPage");
+			//await NavigationService.NavigateAsync("MyNavigationPage/MediaHomeView");
+			await NavigationService.NavigateAsync("MediaHomeView");
 		}
 
 		protected override void RegisterTypes(IContainerRegistry containerRegistry)

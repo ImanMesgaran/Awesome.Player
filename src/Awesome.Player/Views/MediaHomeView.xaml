@@ -272,7 +272,7 @@
 						<Label
 							HorizontalOptions="Center"
 							LineBreakMode="TailTruncation"
-							Text="Binding Media.Caption} ************************"
+							Text="{Binding CurrentMediaItem.DisplayTitle}"
 							TextColor="AntiqueWhite"
 							VerticalTextAlignment="Center" />
 
@@ -280,8 +280,8 @@
 							FontSize="Caption"
 							HorizontalOptions="Center"
 							LineBreakMode="WordWrap"
-							Text="Binding Media.Title}"
-							TextColor="AntiqueWhite"
+							Text="{Binding CurrentMediaItem.Artist, Converter={StaticResource emptyArtist}}"
+							TextColor="DarkGray"
 							VerticalTextAlignment="Center" />
 					</StackLayout>
 

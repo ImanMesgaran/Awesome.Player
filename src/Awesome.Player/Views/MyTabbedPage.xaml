@@ -24,7 +24,7 @@
 	</TabbedPage.Resources>
 
 	<TabbedPage.Children>
-		<views:MediaHomeView>
+		<!--<views:MediaHomeView>
 			<views:MediaHomeView.IconImageSource>
 				<FontImageSource
 					FontFamily="{StaticResource FontAwesomeProRegular}"
@@ -32,7 +32,7 @@
 					Size="20"
 					Color="DarkGray" />
 			</views:MediaHomeView.IconImageSource>
-		</views:MediaHomeView>
+		</views:MediaHomeView>-->
 
 		<views:MediaNewsView>
 			<views:MediaNewsView.IconImageSource>

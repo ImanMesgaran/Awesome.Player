@@ -49,12 +49,12 @@
 				Command="{Binding OpenVideoPickerCommand}"
 				Style="{StaticResource PrimaryButton}"
 				Text="Play video from video gallery" />
-			<Button
+			<!--<Button
 				Grid.Row="2"
 				Margin="24,0"
 				Command="{Binding OpenUrlCommand}"
 				Style="{StaticResource PrimaryButton}"
-				Text="Play from URL" />
+				Text="Play from URL" />-->
 		</Grid>
 	</Frame.Content>
 </Frame>

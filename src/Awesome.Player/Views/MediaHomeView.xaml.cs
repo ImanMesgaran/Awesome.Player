@@ -1,20 +1,33 @@
 ﻿using System;
 using System.Linq;
+using Awesome.Player.Events;
 using Awesome.Player.Models;
 using Awesome.Player.ViewModels;
 using MediaManager;
+using Prism.Events;
 using Prism.Navigation;
+using Prism.Services.Dialogs;
 using Xamarin.Forms;
 
 namespace Awesome.Player.Views
 {
-	public partial class MediaHomeView : ContentPage,IDestructible
+	public partial class MediaHomeView : ContentPage , IDestructible
 	{
+		private readonly IEventAggregator _eventAggregator;
+
 		public IMediaManager MediaManager { get; }
 
-		public MediaHomeView()
+		//public MediaHomeView()
+		//{
+
+		//}
+
+		public MediaHomeView(
+			IEventAggregator eventAggregator)
 		{
 			InitializeComponent();
+
+			_eventAggregator = eventAggregator;
 
 			MediaManager = ((MediaHomeViewViewModel) this.BindingContext).MediaManager;
 			
@@ -27,16 +40,20 @@ namespace Awesome.Player.Views
 			GC.Collect();
 		}
 
-		/*
-		private void OnCollectionViewSelectionChanged(object sender, SelectionChangedEventArgs e)
+		protected override bool OnBackButtonPressed()
 		{
-			if (e.CurrentSelection.FirstOrDefault() is MediaModel item)
+			var mediaViewmodel = this.BindingContext as MediaHomeViewViewModel;
+			
+			var dialogInitialized = mediaViewmodel != null && mediaViewmodel.IsDialogInitialized;
+
+			if (dialogInitialized)
 			{
-				var viewmodel = this.BindingContext as MediaHomeViewViewModel;
-				viewmodel?.NavigateFromViewCommand((MediaModel)e.CurrentSelection.FirstOrDefault());
-				MediaCollectionView.SelectedItem = null;
+				_eventAggregator.GetEvent<CloseDialogEvent>().Publish();
+
+				return true;
 			}
+
+			return false;
 		}
-		*/
 	}
 }

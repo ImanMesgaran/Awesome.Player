@@ -211,7 +211,8 @@
 						<TapGestureRecognizer Command="{Binding AddNoteCommand}" CommandParameter="{x:Reference PositionSlider}" />
 					</Label.GestureRecognizers>
 				</Label>-->
-				<Label
+
+				<!--<Label
 					Grid.Column="1"
 					FontFamily="{StaticResource FontAwesomeProSolid}"
 					FontSize="15"
@@ -234,7 +235,7 @@
 					FontFamily="{StaticResource FontAwesomeProSolid}"
 					FontSize="25"
 					Text="{x:Static resources:AppIcons.CheckMarkFont}"
-					TextColor="AntiqueWhite" />
+					TextColor="AntiqueWhite" />-->
 			</Grid>
 		</Grid>
 	</ContentPage.Content>

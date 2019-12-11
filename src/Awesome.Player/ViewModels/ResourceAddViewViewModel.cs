@@ -4,7 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Acr.UserDialogs;
+using Awesome.Player.Core.ExtentionMethods;
 using Awesome.Player.Core.Infrastructure;
+using Awesome.Player.Events;
 using MediaManager;
 using MediaManager.Library;
 using Plugin.FilePicker;
@@ -12,6 +14,7 @@ using Plugin.Media;
 using Plugin.Media.Abstractions;
 using Plugin.Permissions;
 using Plugin.Permissions.Abstractions;
+using Prism.Events;
 using Prism.Navigation;
 using Prism.Services;
 using Prism.Services.Dialogs;
@@ -20,6 +23,7 @@ namespace Awesome.Player.ViewModels
 {
 	public class ResourceAddViewViewModel : BaseProvider, IDialogAware
 	{
+		private readonly IEventAggregator _eventAggregator;
 		private readonly IUserDialogs _userDialogs;
 
 		private MediaItem _selectedItem = new MediaItem();
@@ -109,23 +113,58 @@ namespace Awesome.Player.ViewModels
 				}
 				if (!string.IsNullOrEmpty(path))
 				{
-					await NavigationService.NavigateAsync("MediaPlayerPage");
-					await CrossMediaManager.Current.Play(path);
+					//await NavigationService.NavigateAsync("MediaPlayerPage");
+					//await CrossMediaManager.Current.Play(path);
+
+					SelectedItem = (MediaItem)await CrossMediaManager.Current.Extractor.CreateMediaItem(path);
+
+					var parameters = new DialogParameters();
+
+					if (SelectedItem.MediaType == MediaType.Audio || SelectedItem.MediaType == MediaType.Video)
+					{
+						parameters.Add("pickedMediaItem", SelectedItem);
+					}
+
+					ExecuteCloseCommand(parameters);
 				}
 			}
 			else await _userDialogs.AlertAsync("EnablePermissions");
 		}
 		private async void OpenUrl()
 		{
-			var result = await _userDialogs.PromptAsync("EnterUrl", inputType: InputType.Url);
-
-			if (!result.Ok) return;
-
-			//TODO: Check if the url is valid
-			if (!string.IsNullOrWhiteSpace(result.Value))
+			try
 			{
-				await NavigationService.NavigateAsync("MediaPlayerPage");
-				await CrossMediaManager.Current.Play(result.Value);
+				var result = await _userDialogs.PromptAsync("EnterUrl", inputType: InputType.Url);
+
+				if (!result.Ok) return;
+
+				//TODO: Check if the url is valid
+				if (!string.IsNullOrWhiteSpace(result.Value))
+				{
+					//await NavigationService.NavigateAsync("MediaPlayerPage");
+					//await CrossMediaManager.Current.Play(result.Value);
+
+					bool isUri = Uri.IsWellFormedUriString(result.Value, UriKind.RelativeOrAbsolute);
+
+					if (isUri)
+					{
+						SelectedItem =
+							(MediaItem) await CrossMediaManager.Current.Extractor.CreateMediaItem(result.Value);
+					}
+
+					var parameters = new DialogParameters();
+
+					if (SelectedItem.MediaType == MediaType.Audio || SelectedItem.MediaType == MediaType.Video)
+					{
+						parameters.Add("pickedMediaItem", SelectedItem);
+					}
+
+					ExecuteCloseCommand(parameters);
+				}
+			}
+			catch (Exception ex)
+			{
+				ex.DebugModeExceptionLog("Select Media Uri Error:");
 			}
 		}
 
@@ -133,8 +172,10 @@ namespace Awesome.Player.ViewModels
 			INavigationService navigationService, 
 			IPageDialogService pageDialogService,
 			IDeviceService deviceService,
-			IUserDialogs userDialogs) : base(navigationService, pageDialogService, deviceService)
+			IUserDialogs userDialogs,
+			IEventAggregator eventAggregator) : base(navigationService, pageDialogService, deviceService)
 		{
+			_eventAggregator = eventAggregator;
 			_userDialogs = userDialogs ?? throw new ArgumentNullException(nameof(userDialogs));
 
 			//CloseCommand = new DelegateCommand(() =>
@@ -147,11 +188,17 @@ namespace Awesome.Player.ViewModels
 
 		public void OnDialogClosed()
 		{
-			
+			_eventAggregator
+				.GetEvent<CloseDialogEvent>()
+				.Unsubscribe(() => ExecuteCloseCommand());
 		}
 
 		public void OnDialogOpened(IDialogParameters parameters)
 		{
+			_eventAggregator
+				.GetEvent<CloseDialogEvent>()
+				.Subscribe(() => ExecuteCloseCommand());
+
 		}
 
 		public event Action<IDialogParameters> RequestClose;

@@ -30,7 +30,7 @@ namespace Awesome.Player.ViewModels
 			set { SetProperty(ref _notePosition, value); }
 		}
 
-		private double _noteDuration;
+		private double _noteDuration = 3;
 		public double NoteDuration
 		{
 			get { return _noteDuration; }

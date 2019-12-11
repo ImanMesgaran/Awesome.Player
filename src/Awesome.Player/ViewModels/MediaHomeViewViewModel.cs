@@ -31,6 +31,13 @@ namespace Awesome.Player.ViewModels
 		private readonly IDialogService _dialogService;
 		public IMediaManager MediaManager { get; }
 
+		private bool _isDialogInitialized;
+		public bool IsDialogInitialized
+		{
+			get { return _isDialogInitialized; }
+			set { SetProperty(ref _isDialogInitialized, value); }
+		}
+
 		private ObservableRangeCollection<MediaItem> _medias ;
 		public ObservableRangeCollection<MediaItem> Medias
 		{
@@ -177,6 +184,7 @@ namespace Awesome.Player.ViewModels
 			try
 			{
 				_dialogService.ShowDialog("ResourceAddView", CloseDialogCallback);
+				IsDialogInitialized = true;
 			}
 			catch (Exception ex)
 			{
@@ -190,11 +198,14 @@ namespace Awesome.Player.ViewModels
 			{
 				//var selectedMediaItem = (MediaItem)dialogResult.Parameters["selectedMediaItem"];
 				PickedMediaItem = dialogResult.Parameters.GetValue<MediaItem>("pickedMediaItem");
+
+				if (PickedMediaItem!=null)
+					SaveMediaToPlaylist(PickedMediaItem);
 			}
-
-			SaveMediaToPlaylist(PickedMediaItem);
-
+			
 			await GetMediaItems();
+
+			IsDialogInitialized = false;
 		}
 
 		private void SaveMediaToPlaylist(MediaItem pickedMediaItem)
